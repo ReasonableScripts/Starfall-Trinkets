@@ -4,6 +4,10 @@
 
 local appearToggle = 0
 
+print("Whichever key is bound to walk will toggle screen visibility (Left ALT by default)")
+print("If toggled ON, screen will only appear if you look down")
+print("If toggled OFF, screen will not appear")
+
 hook.add("KeyPress", "", function(ply,key)
     
     if ply == owner() and key == 262144 then appearToggle = appearToggle + 1 end
@@ -20,11 +24,6 @@ hook.add("OnEntityCreated", "", function(ent)
                 if isValid(ent) then
                     
                 ent:setNocollideAll(true)
-                
-                
-                
-                ent:setAngles( (owner():getPos() - owner():getPos() - owner():getEyeAngles():getForward() * 20):getAngle() )
-                
     
                     if owner():getEyeAngles().pitch < 35 or appearToggle == 0 then
                         
@@ -37,6 +36,8 @@ hook.add("OnEntityCreated", "", function(ent)
                         ent:setNoDraw(false)
                         
                         ent:setPos(owner():getEyePos() - Vector(0,0,30) + owner():getEyeAngles():getForward() * 5)
+                        
+                        ent:setAngles( (owner():getPos() - owner():getPos() - owner():getEyeAngles():getForward() * 20):getAngle() )
                     
                     end
                 
