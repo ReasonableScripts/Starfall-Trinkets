@@ -1,0 +1,153 @@
+--@name OtherWorld
+--@author PurpleDismay
+--@shared
+
+
+
+if SERVER then
+    Seat = prop.createSeat(chip():getPos() + Vector(0,0,20), Angle(0,0,0), "models/props_c17/FurnitureChair001a.mdl", true)
+    Hud = prop.createComponent(chip():getPos() - Seat:getRight()*8 + Seat:getUp()*28, Angle(90,0,0), "starfall_hud", "models/bull/dynamicbuttonsf.mdl", true)
+    Hud:linkComponent(chip())
+    print("hai")
+end
+
+
+if CLIENT then
+    
+    local Left = false
+    local Right = false
+    local Forward = false
+    local Backward = false
+
+        hook.add("KeyPress", "", function(ply, key)
+        
+        
+        if key == 512 and ply == player() then
+            Left = true
+        end
+        
+        if key == 1024 and ply == player() then
+            Right = true
+        end
+        
+        if key == 8 and ply == player() then
+            Forward = true
+        end
+        
+        if key == 16 and ply == player() then
+            Backward = true
+        end
+        
+        if key == 2 and ply == player() then
+            Jump = true
+        end
+        
+    end)
+    
+    
+    hook.add("KeyRelease", "", function(ply, key)
+    
+    
+        if key == 512 and ply == player() then
+            Left = false
+        end
+        
+        if key == 1024 and ply == player() then
+            Right = false
+        end
+        
+        if key == 8 and ply == player() then
+            Forward = false
+        end
+        
+        if key == 16 and ply == player() then
+            Backward = false
+        end
+        
+        if key == 2 and ply == player() then
+            Jump = false
+        end
+        
+    end)
+    
+    
+    
+    
+    
+    
+    
+    
+    local DownVel = 0
+    local ForwardVel = Vector(0,0,0)
+    local RightVel = Vector(0,0,0)
+    
+    local Pos = chip():getPos() + Vector(560,0,-16000)
+    local Speed = 3
+    
+    hook.add("drawhud", "3dhud", function()
+        if player():inVehicle() then
+            
+        if Forward then
+           ForwardVel = ForwardVel + ( Vector(eyeAngles():getForward().x, eyeAngles():getForward().y, 0 )) * Speed
+        end
+        if Backward then
+           ForwardVel = ForwardVel - ( Vector(eyeAngles():getForward().x, eyeAngles():getForward().y, 0 )) * Speed
+        end
+        if Left then
+           RightVel = RightVel - ( Vector(eyeAngles():getRight().x, eyeAngles():getRight().y, 0 )) * Speed
+        end
+        if Right then
+           RightVel = RightVel + ( Vector(eyeAngles():getRight().x, eyeAngles():getRight().y, 0 )) * Speed
+        end
+        
+        
+        DropAdapt = timer.frametime() * 60
+        if DropAdapt < 1 then DropAdapt = 1 end
+        
+        if Pos.z + DownVel > -11070 then
+            DownVel = DownVel - 0.2 * DropAdapt
+            ForwardVel = ForwardVel - (ForwardVel*2.5*0.01) * DropAdapt
+            RightVel = RightVel - (RightVel*2.5*0.01) * DropAdapt
+            Speed = 0.75* DropAdapt
+            
+        elseif Pos.z + DownVel <= -11070 then
+            DownVel = 0
+            ForwardVel = ForwardVel - (ForwardVel*20*0.01) * DropAdapt
+            RightVel = RightVel - (RightVel*20*0.01) * DropAdapt
+            Speed = 3 * DropAdapt
+        end
+        
+        if Jump then
+            DownVel = 5
+            Jump = false
+        end
+        
+        Pos.z = Pos.z + DownVel * DropAdapt
+        
+        
+        Pos = Pos + ForwardVel + RightVel
+        
+        
+        
+        render.pushViewMatrix({
+            
+        origin = Pos,
+        angles = eyeAngles(),
+        x = 0,
+        y = 0,
+        w = 1920,
+        h = 1080,
+        aspect = 1920 / 1080,
+        type = "3D"
+        
+        })
+        
+        render.draw3DBox(Vector(chip():getPos().x,chip():getPos().y,-9999), Angle(0,0,0), -Vector(-9999,-9999,-9999), -Vector(9999,9999,9999))
+        render.setColor(Color(255,25,255))
+        render.draw3DBox(Vector(chip():getPos().x,chip():getPos().y,-11200), Angle(0,0,0), -Vector(-9999,-9999,-1), -Vector(9999,9999,1))
+        render.setColor(Color(255,25,25))
+        render.draw3DBox(chip():getPos() + Vector(150,0,-16270), Angle(0,0,0), -Vector(-100,-100,-100), -Vector(10,10,10))
+        end
+    end)
+
+end

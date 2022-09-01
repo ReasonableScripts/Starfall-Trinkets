@@ -1,0 +1,156 @@
+--@name Prop Control
+--@author PurpleDismay
+--@shared
+
+Model = "models/props_junk/watermelon01.mdl"
+
+
+if SERVER then
+
+local Forward = false
+local Backward = false
+local Left = false
+local Right = false
+local Jump = false
+local Sprint = false
+
+local proplist = {}
+
+Prop = prop.create(chip():getPos(), Angle(0,0,0), Model, false)
+
+function amass( prop )
+    prop:addCollisionListener( amass )
+end
+
+Prop:addCollisionListener( amass )
+
+
+
+Prop:setPos(Vector( 0, 0, ( Prop:obbSize().z/2 ) ) + chip():getPos() - Prop:obbCenter() )
+hook.add("ClientInitialized", "", function()
+    net.start("Prop")
+    net.writeEntity(Prop)
+    net.send()
+end)
+
+
+
+
+enableHud(owner(),true)
+
+hook.add( "KeyPress", "name", function( ply, key )
+    
+    
+if key == 512 and ply == owner() then
+        Left = true
+end
+if key == 1024 and ply == owner() then
+        Right = true
+end
+if key == 8 and ply == owner() then
+        Forward = true
+end
+if key == 16 and ply == owner() then
+        Backward = true
+end
+if key == 2 and ply == owner() then
+        Jump = true
+end
+if key == 131072 and ply == owner() then
+        Sprint = true
+end
+
+end)
+
+
+hook.add( "KeyRelease", "name", function( ply, key )
+        
+if key == 512 and ply == owner() then
+        Left = false
+end
+if key == 1024 and ply == owner() then
+        Right = false
+end
+if key == 8 and ply == owner() then
+        Forward = false
+end
+if key == 16 and ply == owner() then
+        Backward = false
+end
+if key == 2 and ply == owner() then
+        Jump = false
+end
+if key == 131072 and ply == owner() then
+        Sprint = false
+end
+    
+end)
+
+Block = 0
+
+timer.create("The Timer", 0.1, 0, function()
+    
+    
+    if Block >= 12 and Block < 13 then MovementBlocker = prop.create(owner():getPos(), Angle(0,-owner():getAngles().yaw,0), "models/props_phx/construct/metal_tubex2.mdl", true) MovementBlocker:setNoDraw(true) end
+    
+    Block = Block + 1
+    
+    if isValid(Prop) then RecoveryPos = Prop:getPos() end
+    
+    if not isValid(Prop) then
+        Prop = prop.create(RecoveryPos, Angle(0,0,0), Model, false)
+        Prop:setPos(Vector( 0, 0, ( Prop:obbSize().z/2 ) ) + RecoveryPos - Prop:obbCenter() )
+        net.start("Prop")
+        net.writeEntity(Prop)
+        net.send()
+    end
+    
+    if isValid(Prop) then
+        
+        if Sprint then
+            Force = 100*2
+        elseif not Sprint then
+            Force = 50*2
+        end 
+        
+        
+        if Forward then
+            Prop:addVelocity( owner():getEyeAngles():getForward() * Force ) 
+        end
+        if Backward then
+            Prop:addVelocity( -owner():getEyeAngles():getForward() * Force ) 
+        end
+        if Left then
+            Prop:addVelocity( -owner():getEyeAngles():getRight() * Force ) 
+        end
+        if Right then
+            Prop:addVelocity( owner():getEyeAngles():getRight() * Force ) 
+        end
+        if Jump then
+            Prop:addVelocity( Vector(0,0,150)) 
+        end
+        
+    end
+end)
+
+
+end
+
+if CLIENT then
+
+local tabl = {}
+
+    net.receive("Prop", function()
+        local Prop = net.readEntity()
+        
+        hook.add("calcview", "", function()
+            if isValid(Prop) then
+                tabl["origin"] = Prop:getPos() - ( eyeAngles():getForward() * 550)
+                tabl["drawviewer"] = true  
+                return tabl
+            end
+        end)
+        
+    end)
+    
+end

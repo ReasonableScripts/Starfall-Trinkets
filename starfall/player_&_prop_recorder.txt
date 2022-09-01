@@ -1,0 +1,162 @@
+--@name Player & Prop Recorder
+--@author PurpleDismay
+--@server
+HoloProps = {}
+HoloPos = { {}, {} }
+HoloAng = { {}, {} }
+HoloAnim = { {}, {} }
+HoloMoveX = { {}, {} }
+HoloMoveY = { {}, {} }
+
+HoloAimYaw = { {}, {} }
+HoloAimPitch = { {}, {} }
+HoloScale = { {},{} }
+
+HoloSay = { {},{} }
+
+
+AllEnts = {}
+Frame = 1
+FrameMax = 1
+//owner():getPose("move_x")
+
+AllEnts = find.inSphere(chip():getPos(), 1000)
+local Pause = false
+
+
+
+for i=1,#AllEnts do
+    //print(owner():getClass())
+    tempclass = AllEnts[i]:getClass()
+    if AllEnts[i]:getClass() == "player" or string.find(tempclass, "lunasflightschool", 1) ~= nil or AllEnts[i]:getClass() == "prop_physics" or AllEnts[i]:getClass() == "gmod_sent_vehicle_fphysics_base"  or AllEnts[i]:getClass() == "phys_spring"  or AllEnts[i]:getClass() == "gmod_sent_vehicle_fphysics_attachment" and AllEnts[i]:getOwner() == owner() then 
+  
+    
+//or string.find(tempclass, "lunasflightschool", 1) ~= nil or AllEnts[i]:getClass() == "prop_physics" or AllEnts[i]:getClass() == "gmod_sent_vehicle_fphysics_base"  or AllEnts[i]:getClass() == "phys_spring"  or AllEnts[i]:getClass() == "gmod_sent_vehicle_fphysics_attachment"  then 
+              
+    
+    //lunasflightschool
+    
+        
+        //print((AllEnts[i]:getPos()):getDistance(chip():getPos()), AllEnts[i])
+        Model = AllEnts[i]:getModel()
+
+   
+        if Model ~= nil then
+
+            HoloProps[i] = holograms.create(AllEnts[i]:getPos(), AllEnts[i]:getAngles(), Model, Vector(1,1,1))
+            HoloProps[i]:setColor(Color(255,255,255,0))
+            //HoloProps[i]:setNoDraw(true)
+            //print(#HoloProps)
+        end
+    end    
+end
+
+
+
+
+hook.add("Playersay","said",function(player,text)
+    if player == owner() then
+        if text:sub(1,8) == "-replay" then
+            Frame = 1
+        end
+        
+        if text:sub(1,8) == "-replay " then
+            Frame = tonumber(text:sub(8,11))
+            print(tonumber(text:sub(8,11)))
+        end
+            
+        
+        
+    
+        if text:sub(1,6) == "-pause" and Pause == false then
+            Pause = true
+        else
+            if text:sub(1,6) == "-pause" and Pause == true then
+            Pause = false
+            end
+        end 
+            
+    end   
+            
+end)
+
+    
+
+
+timer.create("The Timer", 0.125, 0, function()
+    
+ 
+    
+   for i,v in pairs(HoloProps) do
+    
+    
+
+    if HoloScale[i] == nil or HoloPos[i] == nil or HoloAng[i] == nil or HoloAnim[i] == nil or HoloMoveX[i] == nil or HoloMoveY[i] == nil or HoloAimYaw[i] == nil or HoloAimPitch[i] == nil then
+        HoloPos[i] = {}
+        HoloAng[i] = {}
+        HoloAnim[i] = {}
+        HoloMoveX[i] = {}
+        HoloMoveY[i] = {}
+        
+        HoloAimYaw[i] = {}
+        HoloAimPitch[i] = {}
+        HoloScale[i] = {}
+    end
+    
+        if HoloProps[i] ~= nil then
+            
+            if isValid(AllEnts[i]) == true then
+                tempclass = AllEnts[i]:getClass()
+                if AllEnts[i]:getClass() == "player" or string.find(tempclass, "lunasflightschool", 1) ~= nil or AllEnts[i]:getClass() == "prop_physics" or AllEnts[i]:getClass() == "gmod_sent_vehicle_fphysics_base"  or AllEnts[i]:getClass() == "phys_spring"  or AllEnts[i]:getClass() == "gmod_sent_vehicle_fphysics_attachment"  then 
+   
+    
+           
+                    if HoloScale[i] ~= nil and HoloPos[i] ~= nil and HoloAng[i] ~= nil and HoloAnim[i] ~= nil and HoloMoveX[i] ~= nil and HoloMoveY[i] ~= nil and HoloAimPitch[i] ~= nil and HoloAimYaw[i] ~= nil and  Frame >= FrameMax-1 then
+                        
+                        if v:getClass() == "starfall_hologram" then
+                        HoloPos[i][Frame] = AllEnts[i]:getPos()
+                        HoloAng[i][Frame] = AllEnts[i]:getAngles()
+                        HoloAnim[i][Frame] = AllEnts[i]:getSequenceName(AllEnts[i]:getSequence())
+                        HoloMoveX[i][Frame] = AllEnts[i]:getPose("move_x")
+                        HoloMoveY[i][Frame] = AllEnts[i]:getPose("move_y")
+                        HoloAimYaw[i][Frame] = AllEnts[i]:getPose("aim_yaw")
+                        HoloAimPitch[i][Frame] = AllEnts[i]:getPose("aim_pitch")
+                        HoloScale[i][Frame] = AllEnts[i]:getModelScale()
+                        v:setColor(Color(255,255,255,0))
+                       end
+                    else
+                    if HoloScale[i] ~= nil and HoloPos[i] ~= nil and HoloAng[i] ~= nil and HoloAnim[i] ~= nil and HoloMoveX[i] ~= nil and HoloMoveY[i] ~= nil and HoloAimPitch[i] ~= nil and HoloAimYaw[i] ~= nil and Frame < FrameMax-1 and isValid(v) == true then
+                     
+                        //tempvar = 
+                        //print(v:getClass())
+                        
+                        if v:getClass() == "starfall_hologram" then
+                           v:setAnimation(HoloAnim[i][Frame]) 
+                           v:setPose("move_x",HoloMoveX[i][Frame])
+                           v:setPose("move_y",HoloMoveY[i][Frame])
+                           v:setPose("aim_yaw",HoloAimYaw[i][Frame])
+                           v:setPose("aim_pitch",HoloAimPitch[i][Frame])
+                           
+                        end
+                        v:setColor(Color(255,255,255,255))
+                        
+                        v:setScale(Vector(HoloScale[i][Frame]))
+                        
+                        v:setPos(HoloPos[i][Frame])
+                        v:setAngles(HoloAng[i][Frame])
+              
+                    end
+                    end
+                end
+            end    
+    
+        end
+   end 
+    if Pause == false then
+        Frame = Frame + 1
+        if Frame >= FrameMax then
+            FrameMax = FrameMax + 1
+        end
+    end
+    
+end)

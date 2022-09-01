@@ -1,0 +1,156 @@
+--@name Maze
+--@author PurpleDismay
+--@client
+
+local x = 7
+local y = 7
+    
+Maze = {}
+
+for i2 = 1, 1000 do
+    Maze[i2] = {}
+    for i = 1, 1000 do
+        Maze[i2][i] = 2
+        
+    end
+end
+
+Scale = 2
+print()
+for i2 = 5, 512 do
+    for i = 5, 512 do
+       Maze[i2][i] = 1
+    
+    end
+end
+
+
+
+
+
+
+
+
+
+
+local RetracePositions = {}
+
+//if CLIENT == true then
+render.createRenderTarget("RT")
+local i = 1
+local Backtrack = false
+local Percent = 1
+hook.add("renderoffscreen","",function()
+
+    render.selectRenderTarget("RT")
+    
+    
+    
+    
+    print(math.round((Percent/64517.046272)*100, 4))
+    
+    
+    if (Maze[x + 2][y] + Maze[x - 2][y] + Maze[x][y + 2] + Maze[x][y - 2]) < 8 and (Maze[x + 1][y] + Maze[x - 1][y] + Maze[x][y + 1] + Maze[x][y - 1]) < 8 then
+    
+    
+    RandDir = math.floor(math.rand(1,5))
+    
+    
+    
+    if RandDir == 3 then
+        if Maze[x + 2][y] == 1 and Maze[x + 2][y] == 1 then
+            render.drawRectFast(x*Scale,y*Scale,Scale,Scale)
+            x = x + 2
+            Percent = Percent + 1
+            Maze[x][y] = 2
+            render.setColor(Color(255,255,255,255))
+            render.drawRectFast(x*Scale,y*Scale,Scale,Scale)
+            render.drawRectFast((x-1)*Scale,y*Scale,Scale,Scale)
+            //render.drawRectFast((x-2)*Scale,y*Scale,Scale,Scale)
+        end
+    else
+        RandDir = math.floor(math.rand(1,5))
+    end
+    
+    if RandDir == 4 then
+        if Maze[x][y + 2] == 1 and Maze[x][y + 2] == 1 then
+            render.drawRectFast(x*Scale,y*Scale,Scale,Scale)
+            y = y + 2
+            Percent = Percent + 1
+            Maze[x][y] = 2
+            render.setColor(Color(255,255,255,255))
+            render.drawRectFast(x*Scale,y*Scale,Scale,Scale)
+            render.drawRectFast(x*Scale,(y-1)*Scale,Scale,Scale)
+            //render.drawRectFast(x*Scale,(y-2)*Scale,Scale,Scale)
+        end
+    else
+        RandDir = math.floor(math.rand(1,5))
+    end
+            
+    
+    if RandDir == 1 and x ~= 4 then
+        if Maze[x - 2][y] == 1 and Maze[x - 2][y] == 1 then
+            render.drawRectFast(x*Scale,y*Scale,Scale,Scale)
+            x = x - 2
+            Percent = Percent + 1
+            Maze[x][y] = 2
+            render.setColor(Color(255,255,255,255))
+            render.drawRectFast(x*Scale,y*Scale,Scale,Scale)
+            render.drawRectFast((x+1)*Scale,y*Scale,Scale,Scale)
+            //render.drawRectFast((x+2)*Scale,y*Scale,Scale,Scale)
+        end
+    else
+        RandDir = math.floor(math.rand(1,5))
+    end
+    
+    if RandDir == 2 and y ~= 4 then
+        if Maze[x][y - 2] == 1 and Maze[x][y - 2] == 1 then
+            render.drawRectFast(x*Scale,y*Scale,Scale,Scale)
+            y = y - 2
+            Percent = Percent + 1
+            Maze[x][y] = 2
+            render.setColor(Color(255,255,255,255))
+            render.drawRectFast(x*Scale,y*Scale,Scale,Scale)
+            render.drawRectFast(x*Scale,(y+1)*Scale,Scale,Scale)
+            //render.drawRectFast(x*Scale,(y+2)*Scale,Scale,Scale)
+        end
+    else
+        RandDir = math.floor(math.rand(1,5))
+    end
+    
+    
+    
+    
+    
+    end
+    
+    
+    
+    
+    if (Maze[x + 1][y] + Maze[x - 1][y] + Maze[x][y + 1] + Maze[x][y - 1]) >= 8 or (Maze[x + 2][y] + Maze[x - 2][y] + Maze[x][y + 2] + Maze[x][y - 2]) >= 8 then
+        i = i - 1
+        
+        if i < 1 then
+            i = 1
+        end
+        
+        x = RetracePositions[i].x
+        y = RetracePositions[i].y
+        RandDir = math.floor(math.rand(1,5))
+        
+    end
+    
+    if (Maze[x + 2][y] + Maze[x - 2][y] + Maze[x][y + 2] + Maze[x][y - 2]) < 8 then
+    RetracePositions[i] = Vector(x,y)
+    i = i + 1
+    end
+    
+    
+    
+end)
+
+hook.add("render","",function()
+    render.setRenderTargetTexture("RT")
+    render.drawTexturedRect(0,0,512,512)
+end)
+

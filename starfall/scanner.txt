@@ -1,0 +1,101 @@
+--@name Scanner
+--@author PurpleDismay
+--@shared
+chip():setColor(Color(0,0,0,255))
+Offset = Vector(0,400,0)
+scan = false
+Radius = 180
+RotationSpeed = 1*5
+ClimbSpeed = 0.06
+MaxClimb = 1000
+BeamLength = 3
+local Climb = 0
+local Rotation = 0
+val = {}
+i = 0
+if SERVER == true then
+    Dots = {}
+    Scanner = holograms.create(Vector(chip():getPos().x,chip():getPos().y,chip():getPos().z), Angle(0,50,0), "models/props_phx/construct/metal_angle360.mdl", Vector(1.775*2,1.775*2,1))
+    Scanner2 = holograms.create(Scanner:getPos()+(Scanner:getForward()*(Radius)), Angle(0,0,0), "models/props_lab/tpplug.mdl", Vector(1,1,1))
+    //constraint.rope(1, Scanner, Scanner2, nil, nil, Vector(50,0,0),Vector(0,0,0), 1, 1, 0, 10,"cable/cable_icon",true)
+    
+    
+    
+    
+    
+    
+    hook.add("Playersay","said",function(player,text)
+        if player == owner() then
+            if text:sub(1,5) == "!scan" then
+            scan = true
+            end
+            if text:sub(1,6) == "!reset" then
+            scan = false
+            Climb = 0
+            Rotation = 0
+            end
+        end
+    end)
+    
+    
+    
+    
+end
+
+timer.create("The Timer", 0.01, 0, function()
+    if SERVER == true and scan == true then
+        Scan2Pos = Scanner:getPos()+(Scanner:getForward()*Radius)
+        Scan2Pos.z = Scan2Pos.z + Climb + 10
+        
+        
+        Scanner2:setPos(Scan2Pos)
+        
+        Scanner2:setAngles(Angle(math.rand(-15,15),(Scanner:getAngles().yaw-180)-math.rand(-15,15),0))
+        
+        Scanner:setAngles(Angle(0,Rotation,0))
+        
+        Rotation = Rotation + RotationSpeed
+        Climb = Climb + ClimbSpeed
+        
+        local Filter = {Scanner,Scanner2,chip(),game.getWorld()}
+        trac = trace.trace(Scanner2:getPos(), Scanner2:getPos()+Scanner2:getForward()*Radius*BeamLength, Filter)
+        
+        if trac.Hit == true and trac.Entity:getClass() ~= "player" and trac.Entity ~= game.getWorld() and trac.Entity:getOwner() == owner() then
+            net.start("Positions")
+            net.writeVector(trac.HitPos)
+            net.send()
+        end
+        if Climb > MaxClimb then
+            scan = false
+            Climb = 0
+            Rotation = 0
+        end
+    end
+    
+    
+    if CLIENT == true then
+        
+        net.receive("Positions", function()
+        //OffsetPosition = (net.readVector() + Offset)
+        
+        //OffsetPosition = ((net.readVector() + Offset) / 2) + ((net.readVector() + Offset) / 2):getDistance((net.readVector() + Offset))
+        //print()
+        OffsetPosition = ((net.readVector() + Offset)/2) + -((net.readVector() + Offset) - ((net.readVector() + Offset)/2))
+        
+        table.insert(val, OffsetPosition)
+        end)
+        hook.add("drawhud","aaa",function()
+            for i,v in pairs(val) do
+                dist = (255/((val[i]-eyePos()):getLength()/20))+80
+                render.setColor(Color(dist,dist,dist,255))
+                ScrnPos = val[i]:toScreen()
+                
+                render.drawRectFast(ScrnPos.x, ScrnPos.y, 10, 10)
+            end
+            
+            
+        end)
+    end
+    
+    
+end)

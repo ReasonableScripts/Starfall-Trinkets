@@ -1,0 +1,188 @@
+--@name Maze
+--@author PurpleDismay
+--@client
+
+local x = 15
+local y = 15
+    
+Maze = {}
+
+for i2 = 1, 1000 do
+    Maze[i2] = {}
+    for i = 1, 1000 do
+        Maze[i2][i] = 1
+    end
+end
+
+local RetracePositions = {}
+
+//if CLIENT == true then
+render.createRenderTarget("RT")
+local i = 1
+local Backtrack = false
+hook.add("renderoffscreen","",function()
+    render.selectRenderTarget("RT")
+    
+    RandDir = math.floor(math.rand(1,5))
+    
+    
+     if x <= 20 then 
+        i = i - 1
+        if RetracePositions[i] == 1 then x = x - 2 end
+        if RetracePositions[i] == 2 then y = y - 2 end
+        if RetracePositions[i] == 3 then x = x + 2 end
+        if RetracePositions[i] == 4 then y = y + 2 end
+        
+        
+        RandDir = math.floor(math.rand(1,5))
+    end
+    
+    if x <= 20 then 
+        i = i - 1
+        if RetracePositions[i] == 1 then x = x - 2 end
+        if RetracePositions[i] == 2 then y = y - 2 end
+        if RetracePositions[i] == 3 then x = x + 2 end
+        if RetracePositions[i] == 4 then y = y + 2 end
+        
+        
+        RandDir = math.floor(math.rand(1,5))
+    end
+        
+    if x >= 4 then 
+        i = i - 1
+        if RetracePositions[i] == 1 then x = x - 2 end
+        if RetracePositions[i] == 2 then y = y - 2 end
+        if RetracePositions[i] == 3 then x = x + 2 end
+        if RetracePositions[i] == 4 then y = y + 2 end
+        
+        
+        RandDir = math.floor(math.rand(1,5))
+    end
+    if y >= 4 then 
+        i = i - 1
+        if RetracePositions[i] == 1 then x = x - 2 end
+        if RetracePositions[i] == 2 then y = y - 2 end
+        if RetracePositions[i] == 3 then x = x + 2 end
+        if RetracePositions[i] == 4 then y = y + 2 end
+        
+        
+        RandDir = math.floor(math.rand(1,5))
+    end
+    
+    
+    
+    
+    if RandDir == 3 then
+        if Maze[x + 2][y] == 1 and Maze[x + 2][y] == 1 and x + 2 < 20 then
+            render.drawRectFast(x*5,y*5,5,5)
+            x = x + 2
+            Maze[x][y] = 2
+            render.setColor(Color(255,255,255,255))
+            render.drawRectFast(x*5,y*5,5,5)
+            render.drawRectFast((x-1)*5,y*5,5,5)
+            render.drawRectFast((x-2)*5,y*5,5,5)
+        end
+    end
+    
+    if RandDir == 4 then
+        if Maze[x][y + 2] == 1 and Maze[x][y + 2] == 1 and y + 2 < 20 then
+            render.drawRectFast(x*5,y*5,5,5)
+            y = y + 2
+            Maze[x][y] = 2
+            render.setColor(Color(255,255,255,255))
+            render.drawRectFast(x*5,y*5,5,5)
+            render.drawRectFast(x*5,(y-1)*5,5,5)
+            render.drawRectFast(x*5,(y-2)*5,5,5)
+        end
+    end
+            
+    
+    if RandDir == 1 and x > 4 then
+        if Maze[x - 2][y] == 1 and Maze[x - 2][y] == 1 then
+            render.drawRectFast(x*5,y*5,5,5)
+            x = x - 2
+            Maze[x][y] = 2
+            render.setColor(Color(255,255,255,255))
+            render.drawRectFast(x*5,y*5,5,5)
+            render.drawRectFast((x+1)*5,y*5,5,5)
+            render.drawRectFast((x+2)*5,y*5,5,5)
+        end
+    end
+    
+    if RandDir == 2 and y > 4 then
+        if Maze[x][y - 2] == 1 and Maze[x][y - 2] == 1 then
+            render.drawRectFast(x*5,y*5,5,5)
+            y = y - 2
+            Maze[x][y] = 2
+            render.setColor(Color(255,255,255,255))
+            render.drawRectFast(x*5,y*5,5,5)
+            render.drawRectFast(x*5,(y+1)*5,5,5)
+            render.drawRectFast(x*5,(y+2)*5,5,5)
+        end
+    end
+    
+    
+    print(x)
+    
+    
+    
+    
+    
+    
+    
+    if x <= 4 or Maze[x - 2][y] == 2 or isValid(Maze[x - 2][y]) == false then
+        i = i - 1
+        if RetracePositions[i] == 1 then x = x + 2 end
+        if RetracePositions[i] == 2 then y = y + 2 end
+        if RetracePositions[i] == 3 then x = x - 2 end
+        if RetracePositions[i] == 4 then y = y - 2 end
+        
+        
+        RandDir = math.floor(math.rand(1,5))
+    end
+    if Maze[x + 2][y] == 2 or x >= 20 or isValid(Maze[x + 2][y]) == false then
+        i = i - 1
+        if RetracePositions[i] == 1 then x = x + 2 end
+        if RetracePositions[i] == 2 then y = y + 2 end
+        if RetracePositions[i] == 3 then x = x - 2 end
+        if RetracePositions[i] == 4 then y = y - 2 end
+        
+        
+        RandDir = math.floor(math.rand(1,5))
+    end
+    //if isValid(Maze[x][y - 2]) == true then
+    if y <= 4 or Maze[x][y - 2] == 2 then
+        i = i - 1
+        if RetracePositions[i] == 1 then x = x + 2 end
+        if RetracePositions[i] == 2 then y = y + 2 end
+        if RetracePositions[i] == 3 then x = x - 2 end
+        if RetracePositions[i] == 4 then y = y - 2 end
+        
+        RandDir = math.floor(math.rand(1,5))
+    //end
+    end
+    if Maze[x][y + 2] == 2 or y >= 20 then
+        i = i - 1
+        if RetracePositions[i] == 1 then x = x + 2 end
+        if RetracePositions[i] == 2 then y = y + 2 end
+        if RetracePositions[i] == 3 then x = x - 2 end
+        if RetracePositions[i] == 4 then y = y - 2 end
+        
+        
+        RandDir = math.floor(math.rand(1,5))
+    end
+    
+    
+
+    RetracePositions[i] = RandDir
+    i = i + 1
+    print(RandDir)
+    
+    
+end)
+
+hook.add("render","",function()
+    render.setRenderTargetTexture("RT")
+    render.drawTexturedRect(0,0,512,512)
+end)
+

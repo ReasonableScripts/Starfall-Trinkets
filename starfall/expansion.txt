@@ -1,0 +1,54 @@
+--@name Expansion
+--@author
+--@server
+Props = {}
+i = 1
+Pos = chip():getPos()
+Pos.z = Pos.z + 100
+local i2 = 1
+local i3 = 1
+rate = 2
+chip():setPos(Pos)
+
+Props[i] = prop.create(chip():getPos(), chip():getAngles(), "models/props_junk/wood_crate001a.mdl", false)
+//Props[i]:setNocollideAll(true)
+//Props[i]:setColor(Color(math.rand(0,255),math.rand(0,255),math.rand(0,255),math.rand(255,200)))
+Props[i]:addVelocity(Vector(math.rand(-100,100),math.rand(-100,100),math.rand(-100,100)))
+
+timer.create("The Timer", .5, 0, function()
+    if i >= i2 then
+        i2 = ((rate*i))
+    end
+    
+    
+    if i < i2 then
+        if isValid(Props[((i+1)-(i2/rate))]) == true and Props[((i+1)-(i2/rate))] ~= nil then
+        
+        
+        
+        hook.add("EntityRemoved","hai",function(Ent)
+        if Ent:getOwner() == owner() then
+        if isValid(Ent) == true and Ent ~= nil and Ent:getModel() == "models/props_junk/wood_crate001a.mdl" then
+        
+        
+        
+        end
+        end
+        end)
+        
+        
+        
+        Props[i+1] = prop.create(Props[((i+1)-(i2/rate))]:getPos(), Angle(0,0,0), "models/props_junk/wood_crate001a.mdl", false)
+        Props[i+1]:setAngles(Props[((i+1)-(i2/rate))]:getAngles())
+        Props[i+1]:addVelocity(Vector(math.rand(-1000,1000)+Props[((i+1)-(i2/rate))]:getVelocity().x,math.rand(-1000,1000)+Props[((i+1)-(i2/rate))]:getVelocity().y,math.rand(-1000,1000)+Props[((i+1)-(i2/rate))]:getVelocity().z))
+        
+        
+        
+        end
+        i = i + 1
+    end
+    
+end)
+
+
+

@@ -1,0 +1,190 @@
+--@name Hologram thingy
+--@author PurpleDismay
+--@server
+Array = {}
+Array2 = {}
+
+PlayerScale = 0.1
+
+PosRec = {}
+
+Scale = 1.1
+
+totalPlayers = #find.allPlayers()
+holograms.removeAll()
+Array = {}
+Array2 = {}
+for i=1,totalPlayers do 
+    totalPlayers = #find.allPlayers()
+    Array[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/player/mossman.mdl")
+    Array2[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/sprops/misc/alphanum/alphanum_l_a.mdl")
+ScaleTemp = (Array[1]:getScale())
+ ScaleTemp.x = PlayerScale/(Scale)
+ ScaleTemp.z = PlayerScale/(Scale)
+ ScaleTemp.y = PlayerScale/(Scale)
+ Array[i]:setScale(ScaleTemp)
+ ScaleTemp.x = PlayerScale/(Scale)
+ ScaleTemp.z = PlayerScale/(Scale)
+ ScaleTemp.y = PlayerScale/(Scale)
+ Array2[i]:setScale(ScaleTemp)
+ PosRec[i] = owner():getPos()
+ Array[i]:setAnimation("ACT_HL2MP_IDLE")
+end
+
+
+hook.add( "PlayerConnect", "resetlist", function()
+
+totalPlayers = #find.allPlayers()
+holograms.removeAll()
+Array = {}
+Array2 = {}
+for i=1,totalPlayers do 
+   
+    totalPlayers = #find.allPlayers()
+    Array[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/player/mossman.mdl")
+    Array2[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/sprops/misc/alphanum/alphanum_l_a.mdl")
+ ScaleTemp = (Array[1]:getScale())
+ ScaleTemp.x = PlayerScale/(Scale)
+ ScaleTemp.z = PlayerScale/(Scale)
+ ScaleTemp.y = PlayerScale/(Scale)
+ Array[i]:setScale(ScaleTemp)
+ScaleTemp.x = PlayerScale/(Scale)
+ ScaleTemp.z = PlayerScale/(Scale)
+ ScaleTemp.y = PlayerScale/(Scale)
+ Array2[i]:setScale(ScaleTemp)
+ PosRec[i] = owner():getPos()
+ Array[i]:setAnimation("ACT_HL2MP_IDLE")
+end
+end )
+
+hook.add( "PlayerDisconnect", "resetlist2", function()
+totalPlayers = #find.allPlayers()
+holograms.removeAll()
+Array = {}
+Array2 = {}
+for i=1,totalPlayers do 
+    totalPlayers = #find.allPlayers()
+    Array[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/player/mossman.mdl")
+    Array2[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/sprops/misc/alphanum/alphanum_l_a.mdl")
+ ScaleTemp = (Array[1]:getScale())
+ ScaleTemp.x = PlayerScale/(Scale)
+ ScaleTemp.z = PlayerScale/(Scale)
+ ScaleTemp.y = PlayerScale/(Scale)
+ Array[i]:setScale(ScaleTemp)
+ScaleTemp.x = PlayerScale/(Scale)
+ ScaleTemp.z = PlayerScale/(Scale)
+ ScaleTemp.y = PlayerScale/(Scale)
+ Array2[i]:setScale(ScaleTemp)
+ PosRec[i] = owner():getPos()
+ Array[i]:setAnimation("ACT_HL2MP_IDLE")
+end
+end )
+
+
+
+Chip = chip()
+timer.create("The Timer", .5, 0, function()
+totalPlayers = #find.allPlayers()
+local chippos = chip():getPos()
+
+
+
+
+
+
+for i=1,totalPlayers do
+ 
+
+ 
+
+
+ if (find.allPlayers())[i]:isPlayer() == true then
+ pos = (find.allPlayers())[i]:getPos()
+ Array[i]:setModel(tostring((find.allPlayers())[i]:getModel())) 
+ letter = (find.allPlayers())[i]:getName()
+if (letter[(string.find(letter, "[a-zA-Z]"))]) ~= nil  then
+
+local isLowercase = letter == string.lower((letter[(string.find(letter, "[a-zA-Z]"))]))
+
+if isLowercase == true and (letter[(string.find(letter, "[a-zA-Z]"))]) ~= nil then
+LetterModel = ("models/sprops/misc/alphanum/alphanum_l_"..(letter[(string.find(letter, "[a-z]"))])..".mdl")
+end
+if isLowercase == false then
+LetterModel = ("models/sprops/misc/alphanum/alphanum_"..(letter[(string.find(letter, "[a-zA-Z]"))])..".mdl")
+end
+
+
+Array2[i]:setModel(LetterModel) 
+Array2[i]:setColor(team.getColor((find.allPlayers())[i]:getTeam()))
+
+
+end 
+ 
+
+ if (find.allPlayers())[i]:inVehicle() == true then
+ Array[i]:setAngles(Angle(0,((find.allPlayers())[i]:getAngles().yaw),0))
+ Array[i]:setAnimation("ACT_HL2MP_SIT")
+ Array[i]:setAngles(Angle(0,((find.allPlayers())[i]:getAngles().yaw),0))
+ Array[i]:setAngles(Angle(0,((find.allPlayers())[i]:getAngles().yaw),0))
+
+ else
+  
+ if (find.allPlayers())[i]:inVehicle() == false  and (find.allPlayers())[i]:isTyping() == false  then
+ Array[i]:setAnimation("ACT_HL2MP_IDLE")   
+ 
+ end
+ end
+ 
+if (find.allPlayers())[i]:isCrouching() == true and (find.allPlayers())[i]:isNoclipped() == false then
+ 
+ Array[i]:setAnimation("ACT_HL2MP_IDLE_CROUCH")
+
+ else
+
+if (find.allPlayers())[i]:inVehicle() == false and (find.allPlayers())[i]:isTyping() == false then
+ Array[i]:setAnimation("ACT_HL2MP_IDLE")   
+
+ end
+ end 
+ 
+
+
+
+
+
+
+
+
+ Array[i]:setAngles(Angle(0,((find.allPlayers())[i]:getAngles().yaw),0))
+
+
+
+//print((find.allPlayers())[i]:getAngles().yaw)
+
+ //Player:getViewEntity()
+ //print(Angle(0,((find.allPlayers())[i]:getAngles().yaw),0))
+
+ 
+ 
+ if CLIENT then
+ local ang = ((find.allPlayers())[i]:getAngles()).pitch 
+ Array[i]:manipulateBoneAngles(6,Angle(0,-ang,0)) 
+ end
+//print(tostring((find.allPlayers())[i]:getModel()))
+ 
+
+end
+ chip():worldToLocal(pos) 
+ pos.x = (((chippos.x - pos.x)/Scale) + pos.x)
+
+ pos.z = (((chippos.z - pos.z)/Scale) + pos.z)
+
+ pos.y = (((chippos.y - pos.y)/Scale) + pos.y)
+
+ 
+ Array[i]:setPos(pos)  
+ pos.z = pos.z + 10*(10*PlayerScale)
+ Array2[i]:setPos(pos)
+
+end
+end)

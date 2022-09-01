@@ -1,0 +1,14 @@
+--@name testingbotthings
+--@author 
+--@shared
+
+bot = {}
+
+function Initialize()
+
+    test = player():getPos()
+    bot = nextbot:create("models/breen.mdl",test)
+    
+end
+
+Initialize()

@@ -1,0 +1,79 @@
+--@name Map View
+--@author PurpleDismay & Name
+--@client
+
+
+
+
+
+Scale = 160
+Offset = Vector(0,0,0)
+
+
+
+
+render.createRenderTarget("RT")
+render.createRenderTarget("RT2")
+local mat = material.create("gmodscreenspace")
+mat:setTextureRenderTarget("$basetexture", "RT")
+
+
+local scrW, scrH
+
+enableHud(owner(),true)
+
+hook.add("renderscene","blah",function()
+
+    
+    
+
+    
+    scrW, scrH = render.getGameResolution()
+    local PlyPos = player():getEyePos()-chip():getPos()
+    PlyPos.z = PlyPos.z 
+    
+    render.selectRenderTarget("RT")
+    render.setStencilWriteMask( 0xFF )
+    render.setStencilTestMask( 0xFF )
+    render.setStencilReferenceValue( 0 )
+    render.setStencilCompareFunction( STENCIL.ALWAYS )
+    render.setStencilPassOperation( STENCIL.KEEP )
+    render.setStencilFailOperation( STENCIL.KEEP )
+    render.setStencilZFailOperation( STENCIL.KEEP )
+    render.clearStencil()
+    
+    
+    render.setStencilEnable( true )
+    render.setStencilReferenceValue( 1 )
+    render.setStencilCompareFunction( STENCIL.ALWAYS )
+    render.setStencilPassOperation( STENCIL.REPLACE )
+    render.setStencilFailOperation( STENCIL.REPLACE )
+    render.enableDepth(false)
+    
+    render.renderView({
+    
+        angles = player():getEyeAngles(),
+        origin = ((chip():getPos()+ (Offset * Scale))+(Vector(PlyPos.x,PlyPos.y,PlyPos.z)*Scale)),
+        aspectratio = scrW/scrH,
+        drawviewmodel = false,
+        drawviewer = true
+        
+    })
+    
+    render.enableDepth(true)
+    render.setStencilCompareFunction( STENCIL.EQUAL )
+    render.setStencilPassOperation( STENCIL.EQUAL )
+    render.setStencilReferenceValue( 0 )
+    render.clearBuffersObeyStencil(0, 0, 0, 0, false)
+    render.setStencilEnable(false)
+    render.selectRenderTarget()
+end)
+
+hook.add("drawhud", "render_screen", function()
+    scrW, scrH = render.getGameResolution()
+    render.pushViewMatrix({ type = "2D" })
+    render.setRenderTargetTexture("RT")
+    render.setColor(Color(255, 255, 255, 255))
+    render.drawTexturedRect(0, 0, scrW, scrH)
+    chip():setNoDraw(true)
+end)

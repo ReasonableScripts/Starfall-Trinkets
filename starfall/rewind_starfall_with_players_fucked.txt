@@ -1,0 +1,92 @@
+--@name Rewind Starfall Ver.1
+--@author
+--@server
+HoloProps = {}
+HoloPos = { {}, {} }
+HoloAng = { {}, {} }
+AllEnts = {}
+Frame = 1
+FrameMax = 1
+
+
+AllEnts = find.inSphere(chip():getPos(), 1000)
+
+
+for i=1,#AllEnts do
+        
+    if AllEnts[i] ~= game.getWorld() then
+    //print(AllEnts[i]:getModel())
+    //if AllEnts[i]:getClass() == "prop_physics"  then 
+        Class = AllEnts[i]:getClass()
+        Model = AllEnts[i]:getModel()
+
+        //print(Model)
+        if Model ~= nil and string.find(Model, ".mdl", 1) ~= nil and string.find(Class, "weapon", 1) == nil and AllEnts[i]:isWeapon() == false then
+            
+       
+        
+            HoloProps[i] = holograms.create(AllEnts[i]:getPos(), AllEnts[i]:getAngles(), Model, Vector(1,1,1))
+            //HoloProps[i]:setNoDraw(true)
+            //HoloProps[i]:setAnimation("idle_all",nil,1)
+    end
+    //end    
+end
+end
+hook.add( "KeyPress", "name", function( ply, key )
+if key == 4 and ply == owner() then
+        Frame = 1
+end
+end)
+
+
+
+timer.create("The Timer", 0.1, 0, function()
+    
+    
+ 
+    
+   for i,v in pairs(HoloProps) do
+    
+
+    if HoloPos[i] == nil or HoloAng[i] == nil then
+        HoloPos[i] = {}
+        HoloAng[i] = {}
+    end
+    
+        if HoloProps[i] ~= nil then
+            
+            if isValid(AllEnts[i]) == true then
+                
+                 
+           
+                    if HoloPos[i] ~= nil and HoloAng[i] ~= nil and Frame >= FrameMax-1 then
+                        HoloPos[i][Frame] = AllEnts[i]:getPos()
+                        HoloAng[i][Frame] = AllEnts[i]:getAngles()
+                
+                        
+                    else
+                    if HoloPos[i] ~= nil and HoloAng[i] ~= nil and Frame < FrameMax-1 then
+                     
+                        
+                        if (AllEnts[i]:getPos()):getDistance(chip():getPos()) < 1000 then 
+                        HoloProps[i]:setNoDraw(false)
+                        else
+                        HoloProps[i]:setNoDraw(true)
+                        end
+                        
+                        v:setPos(HoloPos[i][Frame])
+                        v:setAngles(HoloAng[i][Frame])
+              
+                    end
+                    end
+                
+            end    
+    
+        end
+   end 
+    Frame = Frame + 1
+    if Frame >= FrameMax then
+        FrameMax = FrameMax + 1
+    end
+    
+end)

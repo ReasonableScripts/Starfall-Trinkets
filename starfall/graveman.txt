@@ -1,0 +1,31 @@
+--@name GraveMan
+--@author
+--@server
+
+
+
+local list = {}
+
+local inc = 0
+
+hook.add("PlayerDeath", "", function(ply)
+    
+    table.insert(list, ply)
+    inc = inc + 1
+    
+    
+end)
+
+
+timer.create("The Timer", 1, 0, function()
+    
+    if inc > 0 then
+    
+        pro = prop.create(list[inc]:getPos() + Vector(0,0,15), Angle(0,list[inc]:getEyeAngles().yaw,0), "models/props_c17/gravestone004a.mdl", true)
+        pro:setNocollideAll(true)
+        table.remove(list, inc)
+        inc = inc - 1
+    end    
+    
+    
+end)

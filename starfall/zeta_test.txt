@@ -1,0 +1,778 @@
+--@name StarZetas
+--@author PurpleDismay and GIGABABAIT
+--@shared
+
+
+// GIGABABAIT wrote the emitSound portion at the bottom
+
+
+
+
+
+MaxBots = 15
+
+ChattyBots = false
+
+
+if SERVER then
+    //chip():use(1, 1)
+    
+end
+
+
+
+
+
+
+
+
+
+if SERVER then
+    
+    
+if ChattyBots == true then  
+    tab = {}
+    tab["_original"] = [[
+    printColor(vec(255,255,50), "person", vec(255,255,255), ": test")
+    
+    
+    runOnTick(1000)
+    
+    
+    ]]
+    tab["_name"] = "chat"
+
+    lol = prop.createSent(chip():getPos() + Vector(0,8,0), Angle(0,0,0), "gmod_wire_expression2", true, tab)
+end
+    
+    
+local Bot = {}
+local RandomAngle = Angle(0,0,0)
+local RandomDistance = 0
+local Time = {}
+local HoldType = {}
+local RandWeapon = {}
+local WeaponModel = {}
+local BotValid = {}
+local FirstFill = 1
+
+Num = 1
+MdlArr = {
+
+"models/player/magnusson.mdl",
+
+"models/player/mossman.mdl",
+
+"models/player/combine_soldier_prisonguard.mdl",
+
+"models/player/police_fem.mdl",
+
+"models/player/group01/female_02.mdl",
+
+"models/player/group01/male_04.mdl",
+
+"models/player/group01/male_07.mdl",
+
+"models/player/group01/male_08.mdl",
+
+"models/player/hostage/hostage_04.mdl",
+
+"models/player/hostage/hostage_03.mdl",
+
+"models/player/hostage/hostage_02.mdl",
+
+"models/player/hostage/hostage_01.mdl",
+
+"models/player/group02/male_02.mdl",
+
+"models/player/group02/male_04.mdl",
+
+"models/player/dod_american.mdl",
+
+"models/player/kleiner.mdl",
+
+"models/player/alyx.mdl",
+
+"models/player/breen.mdl",
+
+"models/player/charple.mdl",
+
+"models/player/corpse1.mdl",
+
+"models/player/urban.mdl",
+
+"models/player/swat.mdl",
+
+"models/player/p2_chell.mdl",
+
+"models/player/mossman_arctic.mdl",
+
+"models/player/monk.mdl",
+
+"models/player/leet.mdl",
+
+"models/player/combine_soldier.mdl",
+
+"models/player/combine_super_soldier.mdl",
+
+"models/player/riot.mdl",
+
+"models/player/phoenix.mdl"
+
+
+}
+
+
+
+
+
+
+
+for i = 1, MaxBots do
+    
+    Bot[i] = nextbot.create(Vector(0,0,0), tostring(MdlArr[math.floor(math.rand(1,30))]))
+    
+    WeaponModel[i] = holograms.create(Bot[i]:getPos() + Vector(0,0,50), Angle(0,0,0), "models/weapons/w_physics.mdl", Vector(0,0,0))
+
+    Time[i] = 0
+
+    
+end
+
+
+
+
+local Fill = 0
+timer.create("The Timer", 0.25, 0, function()
+    //print(FirstFill)
+    Fill = Fill + 1
+    if Fill < MaxBots +1 then
+    Bot[Fill]:remove()
+    end
+    if Fill > MaxBots then Fill = MaxBots + 1 end
+    
+    
+    
+    
+    
+    
+    
+    for i = 1, #Bot do 
+        if isValid(Bot[i]) == false then
+            WeaponModel[i] = holograms.create(chip():getPos() + Vector(0,0,50), Angle(0,0,0), "models/weapons/w_physics.mdl", Vector(0,0,0))
+    
+            Bot[i] = nextbot.create(chip():getPos(), tostring(MdlArr[math.floor(math.rand(1,30))]))
+            WeaponModel[i]:setParent(Bot[i], "anim_attachment_RH")
+            WeaponModel[i]:setSkin(1)
+            
+            
+            WeaponModel[i]:addEffects(EF.BONEMERGE)
+            local SpawnPos = (chip():getPos() + Vector(math.rand(0,40) * 40,math.rand(0,40) * 40,70))
+            Bot[i]:setPos(SpawnPos)
+            Bot[i]:setHealth(75)
+            
+            net.start("BotUpdate")
+            net.writeUInt( i, 5 )
+            net.writeEntity(Bot[i])
+            net.send()
+            
+            
+            Bot[i]:setJumpGapsAllowed(true)
+            Bot[i]:setClimbAllowed(true)
+            Bot[i]:setStepHeight(30)
+            Bot[i]:ragdollOnDeath(true)
+            Bot[i]:setAvoidAllowed(true)
+            Time[i] = 0
+
+            
+            RandWeapon = math.floor(math.rand(1,7))
+            
+            
+            if RandWeapon == 6 then
+            HoldType[i] = "toolgun"
+            end
+            if RandWeapon == 5 then
+            HoldType[i] = "revolver"
+            end
+            if RandWeapon == 4 then
+            HoldType[i] = "pistol"
+            end
+            if RandWeapon == 3 then
+            HoldType[i] = "crowbar"
+            end
+            if RandWeapon == 2 then
+            HoldType[i] = "physgun"
+            end
+            if RandWeapon == 1 then
+            HoldType[i] = "hands"
+            end
+            
+            if HoldType[i] == "crowbar" then
+                Bot[i]:setRunAct(1849)
+                Bot[i]:setIdleAct(1847)
+
+            end
+    
+            if HoldType[i] == "physgun" then
+                Bot[i]:setRunAct(1859)
+                Bot[i]:setIdleAct(1857)
+
+            end
+            
+            if HoldType[i] == "hands" then
+                Bot[i]:setRunAct(1779)
+                Bot[i]:setIdleAct(1777)
+
+            end
+            if HoldType[i] == "pistol" then
+                Bot[i]:setRunAct(1789)
+                Bot[i]:setIdleAct(1787)
+
+            end
+            if HoldType[i] == "revolver" then
+                Bot[i]:setRunAct(1665)
+                Bot[i]:setIdleAct(1663)
+
+            end
+            if HoldType[i] == "toolgun" then
+                Bot[i]:setRunAct(1665)
+                Bot[i]:setIdleAct(1663)
+
+            end
+            
+            
+    
+            Bot[i]:addDeathCallback("deaf", function(NextBot, Damage, Attacker, Inflictor, DamPos, DamForce, DamType)
+                
+                WeaponModel[i]:removeEffects(EF.BONEMERGE)
+                
+            end)
+            
+            Bot[i]:setGotoPos(Bot[i]:getPos()) 
+            
+            
+        end
+
+        if isValid(Bot[i]) == true then
+            RandRun = math.rand(0,151)
+            if RandRun > 0 and RandRun < 37.5 then Run = true else Run = false end
+            if Run == true then Bot[i]:setMoveSpeed(400) end
+            if Run == false then Bot[i]:setMoveSpeed(200) end
+            
+            if HoldType[i] == "physgun" then
+                Bot[i]:setRunAct(1859)
+                Bot[i]:setIdleAct(1857)
+                
+            end
+            
+            if HoldType[i] == "hands" then
+                Bot[i]:setRunAct(1779)
+                Bot[i]:setIdleAct(1777)
+            end
+    
+            if HoldType[i] == "crowbar" then
+                Bot[i]:setRunAct(1879)
+                Bot[i]:setIdleAct(1877)
+                
+                
+            end
+            
+            if HoldType[i] == "pistol" then
+                Bot[i]:setRunAct(1789)
+                Bot[i]:setIdleAct(1787)
+                
+                
+            end
+            if HoldType[i] == "revolver" then
+                Bot[i]:setRunAct(1665)
+                Bot[i]:setIdleAct(1663)
+
+            end
+            if HoldType[i] == "toolgun" then
+                Bot[i]:setRunAct(1665)
+                Bot[i]:setIdleAct(1663)
+
+            end
+            
+            if Bot[i]:getRunAct() == 1879 or Bot[i]:getIdleAct() == 1877 then WeaponModel[i]:setModel("models/weapons/w_crowbar.mdl") end
+            
+            if Bot[i]:getRunAct() == 1779 or Bot[i]:getIdleAct() == 1777 then WeaponModel[i]:setNoDraw(true) else WeaponModel[i]:setNoDraw(false) end
+                
+            if Bot[i]:getRunAct() == 1859 or Bot[i]:getIdleAct() == 1857 then WeaponModel[i]:setModel("models/weapons/w_physics.mdl") end
+            
+            if Bot[i]:getRunAct() == 1789 or Bot[i]:getIdleAct() == 1787 then WeaponModel[i]:setModel("models/weapons/w_pistol.mdl") end
+            
+            if HoldType[i] == "toolgun" then WeaponModel[i]:setModel("models/weapons/w_toolgun.mdl") end
+            
+            if HoldType[i] == "revolver" then WeaponModel[i]:setModel("models/weapons/w_357.mdl") end
+
+            
+            local pos, ang = WeaponModel[i]:getAttachment(1)
+            
+            
+            
+            local pos2, ang2 = Bot[i]:getAttachment(12)
+            
+            
+            
+            if math.floor(math.rand(1,6)) == 5 then
+                
+                
+                
+                if math.floor(math.rand(1,50)) == 2 then 
+                    HoldType[i] = "crowbar"
+                end
+                
+                if math.floor(math.rand(1,50)) == 20 then 
+                    HoldType[i] = "hands"
+                    
+                end
+                
+                if math.floor(math.rand(1,50)) == 18 then 
+                    HoldType[i] = "physgun"
+                end
+                
+                if math.floor(math.rand(1,50)) == 48 then 
+                    HoldType[i] = "pistol"
+                end
+                
+                if math.floor(math.rand(1,50)) == 26 then 
+                    HoldType[i] = "revolver"
+                end
+                
+                if math.floor(math.rand(1,50)) == 38 then 
+                    HoldType[i] = "toolgun"
+                end
+                
+            end
+            
+             
+            if Bot[i]:getGotoPos() ~= nil then
+            if (Bot[i]:getGotoPos() - Bot[i]:getPos()):getLength() < 80 then
+
+                Bot[i]:removeGotoPos()
+                Bot[i]:setMoveSpeed(200)
+            end
+            end
+            
+            
+            if Time[i] > 500 then
+                Bot[i]:removeGotoPos()
+                Bot[i]:setMoveSpeed(200)
+            end
+            
+            if Time[i] >= 30 + math.floor(math.rand(-10,180)) then
+                TempGotoPos = Bot[i]:getGotoPos()
+                if TempGotoPos == nil then
+                    TempGotoPos = Bot[i]:getPos()
+                end
+                
+                
+                if (TempGotoPos - Bot[i]:getPos()):getLength() < 80 or TempGotoPos == nil then
+                    
+                    Bot[i]:setGotoPos(Bot[i]:getPos() + Vector(50+math.rand(-1000,1000),50+math.rand(-1000,1000), 0) ) // This bit
+                    
+                    
+                    
+                    Time[i] = 0
+                end
+            end
+            
+            Time[i] = Time[i] + 1
+            
+        end
+        
+        
+        
+    end
+end)
+    
+end
+
+
+
+if CLIENT then
+    local Bot = {}
+    for i = 1, MaxBots do
+        if Bot[i] == nil then
+            Bot[i] = nil 
+        end
+    end
+
+
+net.receive("BotUpdate", function()
+    index = net.readUInt( 5 )
+    
+    net.readEntity(function(ent)
+    
+        
+        Bot[index] = ent
+        
+    end)
+end)
+
+
+
+
+
+local SpeakerHolo = {}
+    SpeakerIcon = render.createMaterial(
+        "voice/icntlk_pl",
+        function(_,_,_,_,size)
+        size(0,0,1024,1024)
+        end
+    )
+    
+    SpeakerIcon:setInt("$flags", 2097152)
+    local SpeakerTime = {}  
+    for i = 1, MaxBots do
+            SpeakerHolo[i] = holograms.create(chip():getPos() + Vector(0,0,52), Angle(90,0,0), "models/hunter/plates/plate1x1.mdl", Vector(0,0,0))
+            SpeakerHolo[i]:setMaterial("!"..SpeakerIcon:getName())
+            
+            SpeakerTime[i] = 0.01
+    end
+
+
+    
+    timer.create("Speaker", 0.01, 0, function()
+        
+        
+        
+        for i = 1, MaxBots do
+
+                if isValid(Bot[i]) == true then
+                SpeakerHolo[i]:setPos(Bot[i]:getPos() + Vector(0,0,70))
+                SpeakerHolo[i]:setParent(Bot[i])
+                end
+            
+                SpeakerTime[i] = SpeakerTime[i] - 0.025
+                
+                if SpeakerTime[i] <= 0 then SpeakerTime[i] = 0 end
+            
+                
+                if SpeakerTime[i] > 0 then 
+                    SpeakerHolo[i]:setScale(Vector(0.375,0.375,0))
+                end
+                
+                if SpeakerTime[i] <= 0 then 
+                    SpeakerHolo[i]:setScale(Vector(0,0,0)) 
+                end
+                
+            if isValid(Bot[i]) == false then 
+                SpeakerTime[i] = 0 
+            end
+            
+            
+            if isValid(Bot[i]) == true then
+                
+                SpeakerHolo[i]:setAngles(((Bot[i]:getPos() - player():getPos()):getAngle()) + Angle(90,0,0))
+
+            end
+            
+        end
+    
+    end)
+    
+    
+
+
+    local sndUrls = {
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC8dX2Z-ejPrdN0HpHpmM9Aa/idle1.wav?dl=0",
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACbgfrOoWXzG83bcX7bUcPsa/idle2.wav?dl=0",
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAB9OOOv41wlTUzrZ9e8MQ_wa/idle3.wav?dl=0",
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACGOaWcMZcw1-UNhBgsvblRa/idle4.wav?dl=0",
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABvO2gP0IsARhuTWXpI6rK1a/idle5.wav?dl=0",
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACfdoec8gOQ15Dw6Km24jxDa/idle6.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAA70H4ijxH7H3qf5Agt0-iga/idle7.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABz7Kx2S-8mY5UjygC-1kAAa/idle8.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABB-KPZdC8TiS7DzpA8sLSIa/idle9.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACzNeQLom6rPI6YKhLILomaa/idle10.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACUnQjnFGRy0U6eYguckNQga/idle11.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAHRsVQHjLSu5C1-HT0Fsjya/idle12.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABzchJvNZx715fl4ZHLcpWha/idle13.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACZcXTSvT40Yg1PfIQjWQcOa/idle14.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABRoZZqtA-SSMw1d0YM8K_ta/idle15.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAA988KS0J3LSc9s_eGH8zDta/idle16.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADtZJJaxeQDuIpY979wQVkda/idle17.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAHYNnyruybwjZ9w8VBbIIya/idle18.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADJ1UhjNCISEhtxcP9kkRT6a/idle19.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC9UkG64nj4oP5s5oDjKzUPa/idle20.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC8Z1tgutoPMwtuPsfyswlMa/idle21.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACjQB1Gm7c3CkIHlj9FEcQOa/idle22.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADn-qAJ5mRT4ipIERitdWTLa/idle23.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAADKL4568_N0luhYuBMmN0da/idle24.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABJsDIMrCHii2zNXG9WKvTha/idle25.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACGU97gtTib42qubS014D8Fa/idle26.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABDxYsceLqf-80uxAZkNOWNa/idle27.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABrByXnVsFuGfOsZTcE4X3Va/idle28.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABC4ZwZP5Cy20r7-7GxerUUa/idle29.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAIUiLDpTy_XE71LL1h9q0fa/idle30.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACzg-eHwvtFRcGMuxVeaAmfa/idle31.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABmZzUoBGl0dfTl64K91NrQa/idle32.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAA2ud5nbZoWlt3gMMAml9LPa/idle33.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABr7gIvb1dCJbl6ChC-wmhoa/idle34.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABmd0X82yEP1UPzJs3sntXZa/idle35.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACdhWyx6kWj53AMKSuJIevCa/idle36.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADr-XGdBvDTNiqsdfYz5Ptla/idle37.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABVbS2kTc_OdWnIJlo3CNVma/idle38.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABV2vXiY6WVjvqcETO6EivIa/idle39.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACHZTPL7Nhl3IYyUH3U5eU0a/idle40.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAZUnUELnr6fxde1DobuQLca/idle41.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABxA_i_3eR1Zurs1u9z1bEea/idle42.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACCje7jqGbjoasYJioZ0hXja/idle43.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABi7Rkmioyna-l4z6Uut-Zka/idle44.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADXXa0vZiP9pbIJVMV30Zj2a/idle45.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABL_ixVWhgPhnF92zj8pQgTa/idle46.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACizKnQmCunK2Tv2g1es61da/idle47.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACnOAl7FuAvUhjcXe91h7IMa/idle48.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACCmqcwVGHaTOvMPTm2SHt9a/idle49.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAASsZXheW6rl0J2HZwHZ3l5a/idle50.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAXmPBYu4XPRD6J3zzEWtX_a/idle51.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADBP5oiUIeTUhp--EGB0NJRa/idle52.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAaVOue93AHcgRzggYaiJyWa/idle53.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADuG6_iZopWKVQaeMTxOfJDa/idle54.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABQCstpOdYBcLV0Vf3_D4jxa/idle55.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAA6kEXEUfqQ-8ZTASjKEizza/idle56.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABw3GUQBmzo_y7trxAie_AXa/idle57.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAhLq6qWKSjQp0XQiu2wcpia/idle58.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAURe6eRe9-e2M8J9iUqBSCa/idle59.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACUO2w61sx6ky3pA0BW9SYna/idle60.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABbIcH2J8aC-dsjENPyXKx0a/idle61.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAB5UjvKU72doD8cNjdIBBvna/idle62.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAHtWTHBjJY_5ta2VjLT0Poa/idle63.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACWb9C7Ghdgz4FhFC_yIgmFa/idle64.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAz6z3JT4dqHDYs5ne2leVJa/idle65.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAnNz6jpb8nYrSHaPpKBqX6a/idle66.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABFjaNH5fBIW23UpvxWUB3Oa/idle67.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAA3wm-aOAxQvx6HcYJ0kXBTa/idle68.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAD3oFkhUPOdMKYGlUtK-KMa/idle69.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAJO0OPlJ17Bl-3c0StH0n1a/idle70.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABiLsJt1YZVQTgaa0GLyaZ4a/idle71.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABm-IrbBIlnZqfkWekH8XZua/idle72.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADijhoVD7cKBAY-zAxzAm5Ya/idle73.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADWeofchqiuLNwxE5G68TUNa/idle74.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABWQI_elFJpTBtBT_e1DGhea/idle75.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADuCbfh3WIH07RTVAd_doTSa/idle76.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAiNCoZni1z9sUyQZ2BLUKwa/idle77.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACCOaxolQEyVtfo6QRXDAfGa/idle78.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADhRm0F1y0i2GfU7pW2s_pwa/idle79.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACwXBi-Ht46SMPDipmu_Cnqa/idle80.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAvY-f7vu5CDsabsYxLCB88a/idle81.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAD-zIz6VBZQJ41ir5_DM5S6a/idle82.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADd2rUN0-jQapfWM3Niyxy9a/idle83.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADYbBTDq9s3VKmnNj2qjGlza/idle84.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAB2JWRoJkOJFWalUMUjis5Ha/idle85.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADi19PgPc4BKYia7xWq7Mmca/idle86.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADMsKXqafGj-H02ztUkMU4ca/idle87.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAA-dIQ-YwXqzGuyIaDoI7CBa/idle88.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAA46ZY0GhmPJGhCkYJQavBQa/idle89.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACNqDKX3aNUuJW10rY-h4Gua/idle90.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADxVd6LmVpJffILjJrFjI4ia/idle91.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAwNf7ILTkfwLh7w7B4Mj8Ha/idle92.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACcjf0hBIWB5-xPGnf7wisOa/idle93.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABqQ_V4ackg6ATvEYeWqAyJa/idle94.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAFJH-_jkRtRYqbubjJLYxDa/idle95.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACrZp6EESo209LG-WHu-BFYa/idle96.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAKmgUudjnxx3DiweQvUtlpa/idle97.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACvsawj0BP0flbe4rxfUjEza/idle98.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADBbEwKtwTkIejZ_uG8pg63a/idle99.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACVHkxwGXkCgrrDPqXzWsjSa/idle100.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADsv3w3Jv7cDygMcyrAME7ea/idle101.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAdTCntmhnG9LptOLwJFFTna/idle102.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACGA1s6Mq4Jv0rEkPuNUKSna/idle103.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABhwjqtwMg5rxcKJbO5mHxea/idle104.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAxd_t3WqBoBzbsLge6Mi4na/idle105.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAB9syQFXblKxW_XeaxpqbK9a/idle106.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAChlnMcV0daF8XlA6uUDta7a/idle107.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABy0Ahb0ARgHabgaglKssoIa/idle108.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADk8uDOdO4tH-PzcPD40QtDa/idle109.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAADpeHzLzE7ZmcI1Xuyh1HYa/idle110.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABGFFsbP5MzRc_q_QH0mtraa/idle111.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADYcuE0QTfsw6dutObKUXaIa/idle112.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABdUwqxVB7-e5uEHvOo4ka1a/idle113.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAbTfrfg0CVpCzmUCQ_bsLGa/idle114.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABPtMDUxHTi3oS88IDzGnLHa/idle115.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACQTdASfgJAbraFdWsVXsAca/idle116.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABmIOlkwYcT03AbxB0z0daYa/idle117.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAbx4-yQ0y7WBycErxLd_b0a/idle118.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADNMD2k4WZhjYr09qDFXPqJa/idle119.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABOw-ARl_gIMfzsXK8V9a8Da/idle120.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADC5bZYjISG_D0Mr3HRRmHha/idle121.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABuk14vKXMMwLDFzQ9ElbKza/idle122.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACj8_Dj156HSZ4b7sP_LAiXa/idle123.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAWsWy4FZOQ-AwXxJKIspz-a/idle124.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACn7VOcx8RInPDQWufOlY9ta/idle125.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC_hQi2JvpQTO_7HHRx9KG9a/idle126.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAyiVj9Rj-5nZSc-cITyB-2a/idle127.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABO9RjV0eodYaC81VorEGPMa/idle128.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAGxy5wGT6hvIGCivzoC7q6a/idle129.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACe9jkd237z5jzTcv3pWx2Qa/idle130.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAEVNPVX_ltCUGm8oi1NdmOa/idle131.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACdbgCRxrkC_9pv1Im2pa8Fa/idle132.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAB9Yc9AlBsR74-J5Uiiss0La/idle133.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACuKZNclAZ91r93IWbME9lya/idle134.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACoyTwamv0H4uPRT2pBvil6a/idle135.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACLpFs_PfxTwtq2eEpS-G8Wa/idle136.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABMkzLGsOiLmXFZwO_O4GZ1a/idle137.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABxZygTOApimt3n2mhdmFG_a/idle138.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAhHs0_gEoc8Ul5mzTInU_Qa/idle139.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACGnmpZJ_iGagQ95x4LeuIda/idle140.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACg5qmEQsQJRUQxkynsfIuFa/idle141.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACGJZftYgmywlZcCMh5Nkkja/idle142.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC71sml8xtEOzlhNwkTnT8Za/idle143.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAEt5wlOzEfKD-Ewpl45yula/idle144.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADYyfKTb51NZL6CQA3FMXoma/idle145.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADhcyzU5V2HOUeSWILHUPYWa/idle146.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABSXcHbBhsj09KWf5RCyOTea/idle147.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADj2ImZ6dmZ5IlGKiF_GwUTa/idle148.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAABLAeCanfSGld1ntaM8sxMa/idle149.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADM82L6KacvBx-D0R28S3bXa/idle150.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADmutrL8_q4gEm1vrYtQs-ha/idle151.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAB99jlTEo7HqqHmWCkV7lafa/idle152.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAD5_exkF-pLJ91ecGP04M5xa/idle153.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADCVl7Ybxv5L3TZ2Il_Zkmfa/idle154.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABMAT1sUm7bE9YJBm5GH9eCa/idle155.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAYDj65kETIycf1pJpCcxgZa/idle156.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABuNHU5viGox6seLAzfZuqia/idle157.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAZHW5pCrnWisFD-hjvpzOka/idle158.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABeRSVQm0EsvS6NQZm_2fg6a/idle159.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADuVKFLKxQaBnsZc9gZ5A_Fa/idle160.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACQVIlNPzUsxtYRprBmJtGJa/idle161.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACQx6B8_t9B6ioeylBL0VjXa/idle162.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADVokK_itFhv6mUdWo40v2Ma/idle163.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABEOGQFnE7cGTAzGQhoaMYCa/idle164.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAop-sl2UkexVWpgou6jPOGa/idle165.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAfHieods84O1decZgsV5eva/idle166.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADGksTX6l1gr6VmG38kbH1va/idle167.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABNbcHGFDfMYjGqjVao0eNoa/idle168.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACOcYk3xW7ptJ-r-VErF25ua/idle169.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAB2HiJS1XNguI4oQoZeRXB_a/idle170.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAArD6x6tacwt6hj5d3Vq8pXa/idle171.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACh3PSrCtN0BuLHb5vRVW4la/idle172.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADwxZd4BHzlAKD9_KwKHnNua/idle173.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACiQLdUDyjZcDlKrx3r0mhba/idle174.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAtKvnHaHCHI6R30PV8GCoda/idle175.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADOxhFx7dnOsG6IkLpoeB_-a/idle176.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAYZvQfGdtNZv_Q_BdOi-xia/idle177.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACNApuhnHg8MKJHcUxejsaGa/idle178.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC-wPebzTg8ljvQzM7S8NIma/idle179.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABCHZ9UkLs8tcXjNEoyyR1Va/idle180.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACy5uwWQpbkHODP1EyvQ6bIa/idle181.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADmiAT7oCFBLUKaXpFvaDGba/idle182.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABT31TFQGK5XVx76q9-UR14a/idle183.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAANZzzOGvCobK52eqAKYVT4a/idle184.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADghEpmMqT9ckUFOBULbuJka/idle185.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAzuubV_wIYU3GzdRCsiJ4ga/idle186.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABt77Il9KiDWDOAwgiURXLUa/idle187.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADByWZKqPkoM-OOkBT4SmKAa/idle188.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAD0u2gWegJpd-uj86ar_W9fa/idle189.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAHk_D5fvuEQm-N8TwETJbfa/idle190.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADCPyB1P2FH5CuDRPPviHzka/idle191.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAD27b6I8lspStlWoKi7s4XHa/idle192.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC0rH7shUBNmPtkeY3g_PCEa/idle193.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAtT6XqMV6Dp3KkFk_1Z2YBa/idle194.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABaBhYL8DvP82QpGY1ut8E9a/idle195.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADWMc8E7dhJtYFXCO5jQVyja/idle196.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABmQY_8IeP6oD2YZ3wFSrVHa/idle197.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABZDfQVmCDYJTWb_UC433Lwa/idle198.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACVFKpzGRe-YbLL4eCrQoHna/idle199.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADRQbyfD1eGS6LvGqNu0jYsa/idle200.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACn7IsUBlL8-pLp3Q32hQC-a/idle201.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC3I7WvjlAPjeslRr8wcizHa/idle202.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC1F4LvIRtfcw30eUg_8hXda/idle203.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACXbAQjulCS2X_OA1tGXx7Ga/idle204.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABGNSkjo3yphkIHn3pNKgwia/idle205.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABRcJoAuVX5-3L9Q4_5QJV-a/idle206.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACt6MxTjgN5aWTNronh-Hena/idle207.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABwl4gO-qoGJB45C5jTmX_fa/idle208.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABRiZucS9TyG0iXuRi63Meqa/idle209.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABeKQtA2rfjK899-78oJCTfa/idle210.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABb0vXMzcUy0kjfpouqsvnia/idle211.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABGqoJ9jg4F3wdNab9KBsKUa/idle212.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAnG4dTkM9Amk_P5rhNbqhKa/idle213.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADxuyC3bk5SvUkwgJOkzqzoa/idle214.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAB0baszPyIaBHsDGN9ShqyWa/idle215.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABb-jnEh2zM9covDnitjM31a/idle216.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACL3PqiVDgoYhxsFt8UGDkya/idle217.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACM-V57lepT_CoQ9I1P-ryia/idle218.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC1jO5iA_sYyqn5_7EhU0Gua/idle219.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACkM3IqZ6RnviEIiMhVlbKKa/idle220.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADSlxqpZ34sHHHRjutqBkIGa/idle221.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC4SUQ8IUyg-knuiUoZPcITa/idle222.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC1b4TexLh3k_I5Zfgg-qVma/idle223.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAbPQ26bS1kblx4cAP5iamja/idle224.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAA8ud-8rgYjMM4WvoEkr3gsa/idle225.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADKjLBkcxtFwKzs8_o6Kn92a/idle226.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAC3MaUJpG2L-x6xqWemSxFea/idle227.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADH4n4RbowVutkNlGg0rRBza/idle228.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABBJu3A7DDwmoAE_ZTsV6j9a/idle229.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADxQcy6FRXo-Ky3xryoAoeKa/idle230.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADtWd-GdJqLnT2t4b7Q14BXa/idle231.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAD4w4NmbvXYx02l6imnMW5za/idle232.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAAFsU2rAWmNohYhrzS1K_wFa/idle233.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAD-_MDm4WCobTOkQ8SlWUN2a/idle234.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AACzCn8TNj8uMfqRGpZIwq2Ea/idle235.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AABd_EJ7OmW7-4ruWOyolXSra/idle236.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADHqJz0Baby0DYxfbGXZuwra/idle237.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AADXE3DBKX0hG8Yoe5Cm2uDna/idle238.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAB4252zmqLKZaipvcO4OI00a/idle239.wav?dl=0", 
+"https://dl.dropboxusercontent.com/sh/lalcv490a4tvsoj/AAD51TEInkx467qXohxCwezra/idle240.wav?dl=0"
+
+
+    }
+    
+    local sndsToLoad = #sndUrls
+    local sndsLoaded = 0
+    local finishedSndLoad = false
+    
+    local lsndTbl = {}
+    
+    local loadFromUrls = coroutine.wrap(function()
+        for _, url in pairs(sndUrls) do
+            http.get(url, function(body)
+                sndsLoaded = sndsLoaded + 1
+                file.writeTemp("idle"..sndsLoaded..".wav", body)
+                
+                if sndsLoaded >= sndsToLoad then finishedSndLoad = true end
+            end)
+            coroutine.yield()
+        end
+        
+        return true
+    end)
+    
+    hook.add("think", "loadSounds", function()
+        while http.canRequest() do
+            if loadFromUrls() then
+                hook.remove("think", "loadSounds")
+                return
+            end
+        end
+    end)
+    
+    
+        
+    
+    
+    timer.create("idleSounds", 3, 0, function()
+        for i = 1, #Bot do
+        if sndsLoaded > 0 and math.floor(math.rand(0,30)) == 3 and isValid(Bot[i]) == true  then
+            local _, rkey = table.random(Bot)
+            if isValid(Bot[i]) == true and SpeakerTime[i] <= 0 then
+                rndSnd = math.random(1, sndsLoaded)
+            
+            SpeakerTime[i] = (sounds.duration("../data/sf_filedatatemp/"..owner():getSteamID64().."/idle"..rndSnd..".wav"))
+            Bot[i]:emitSound("../data/sf_filedatatemp/"..owner():getSteamID64().."/idle"..rndSnd..".wav", 90) 
+            
+        end
+        end
+        end
+    end)
+
+
+    
+end
+
+
+
+

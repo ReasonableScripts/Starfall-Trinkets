@@ -1,0 +1,28 @@
+lol = {}
+playerCounter = 0
+frameCounter = 0
+Amt = 0
+hook.add("tick", "gay", function()
+
+lol[playerCounter+(0*frameCounter)] = player():getPos()
+frameCounter = frameCounter + 1
+
+
+print(find.allPlayers())
+
+
+Amt = Amt + 1
+
+if Amt > 5*frameCounter then
+Amt = 0
+end
+
+
+
+if lol[Amt] == 1 then
+
+
+
+end
+
+end)

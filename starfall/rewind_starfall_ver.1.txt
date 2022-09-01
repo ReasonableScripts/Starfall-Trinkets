@@ -1,0 +1,55 @@
+--@name Rewind Starfall Ver.1
+--@author
+--@server
+local HoloProps = {}
+local HoloPos = { {}, {} }
+local HoloAng = { {}, {} }
+Frame = 1
+
+
+AllEnts = find.all()
+
+
+for i=1,#AllEnts do
+    if AllEnts[i]:getClass() == "prop_physics"  then 
+        //print((AllEnts[i]:getPos()):getDistance(chip():getPos()), AllEnts[i])
+        Model = AllEnts[i]:getModel()
+
+   
+        if Model ~= nil then
+
+            HoloProps[i] = holograms.create(AllEnts[i]:getPos(), AllEnts[i]:getAngles(), Model, Vector(1,1,1))
+            HoloProps[i]:setNoDraw(true)
+        end
+    end    
+end
+
+
+
+
+
+timer.create("The Timer", 0.3333, 0, function()
+    
+    
+    //print(HoloProps[1]:getModel())
+    
+   for i,v in pairs(HoloProps) do
+
+        if HoloProps[i] ~= nil then
+            
+            if isValid(AllEnts[i]) == true then
+                
+                if AllEnts[i]:getClass() == "prop_physics" then 
+                    //print(HoloPos[i])
+                    if HoloPos[i] ~= nil and HoloAng[i] ~= nil then
+                        HoloPos[i][Frame] = AllEnts[i]:getPos()
+                        HoloAng[i][Frame] = AllEnts[i]:getAngles()
+                    end
+                end
+            end    
+    
+        end
+   end 
+
+    Frame = Frame + 1
+end)

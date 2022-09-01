@@ -1,0 +1,25 @@
+--@name MoonbaseSpeech
+--@author
+--@shared
+
+if SERVER == true then
+hook.add("PlayerSay","said",function(player,text)
+net.start("SpokenText")
+net.writeString(text)
+net.writeEntity(player)
+net.send()
+end)
+end
+
+if CLIENT == true then  
+net.receive("SpokenText", function()
+text = net.readString()
+Pos = net.readEntity():getPos()
+//if bass.soundsLeft() >= 20 then
+bass.loadURL("http://tts.cyzon.us/tts?text=".."\""..text.."\"", "3d",function(Sound,t2,t3)
+Sound:setVolume(10)
+Sound:setPos(Pos)
+Sound:play()
+end)
+end)
+end

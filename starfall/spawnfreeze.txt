@@ -1,0 +1,31 @@
+--@name Spawnfreeze
+--@author
+--@server
+
+local i = 1
+local pos = {}
+local ang = {}
+local pro = {}
+timer.create("itm", 1, 0, function()
+
+pro[i] = prop.create(chip():getPos() + Vector(0,0,5080), Angle(0,0,0), "models/hunter/blocks/cube8x8x8.mdl", false)
+pro[i]:setFrozen(false)
+pos[i] = chip():getPos()
+ang[i] = pro[i]:getAngles() + Angle(1,1,1)
+i = i + 1
+
+end)
+
+
+
+timer.create("itm2", 2, 0, function()
+    for i2 = 1, i do
+        if isValid(pro[i2]) then
+            
+            if ( pos[i2] - pro[i2]:getPos() ):getLength() < 12 then pro[i2]:setFrozen(true) end
+            
+            pos[i2] = pro[i2]:getPos()
+            ang[i2] = pro[i2]:getAngles()
+        end
+    end
+end)

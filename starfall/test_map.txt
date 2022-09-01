@@ -1,0 +1,6 @@
+--@name Test map
+--@author 
+--@client
+
+
+render.renderView(table tbl)

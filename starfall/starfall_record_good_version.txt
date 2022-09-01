@@ -1,0 +1,23 @@
+--@name Steer autothingy
+--@author
+--@server
+
+
+I = 0
+
+
+
+
+timer.create("The Timer", 0, 0, function()
+    I = I + 1
+    local Var2 = (chip():isWeldedTo():getWirelink())
+    Var2["Steer"] = 0.01+ I / 100
+    Var2["Engine Start"] = 1
+    Var2["Throttle"] = 1
+    
+    print(math.atan2(owner():getPos().y - chip():isWeldedTo():getPos().y, owner():getPos().x - chip():isWeldedTo():getPos().x) * (180 / math.pi))
+end)
+
+
+
+

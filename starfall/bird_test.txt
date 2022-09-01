@@ -1,0 +1,173 @@
+--@name bird test
+--@author
+--@shared
+
+if SERVER then
+local i = 1
+
+enableHud(owner(),true)
+bird = nextbot.create(chip():getPos() ,"models/crow.mdl")
+bird:addDeathCallback("death", function() end)
+bird:setMoveSpeed(20)
+hook.add("ClientInitialized", "", function()
+    net.start("bird")
+    net.writeEntity(bird)
+    net.send()
+end)
+        
+hook.add( "KeyPress", "name", function( ply, key )
+    
+    if key == 512 and ply == owner() then
+        Left = true
+end
+if key == 1024 and ply == owner() then
+        Right = true
+end
+if key == 8 and ply == owner() then
+        Forward = true
+end
+if key == 16 and ply == owner() then
+        Backward = true
+end
+if key == 2 and ply == owner() then
+        Jump = true
+end
+if key == 131072 and ply == owner() then
+        Sprint = true
+end
+
+end)
+
+
+hook.add( "KeyRelease", "name", function( ply, key )
+        
+if key == 512 and ply == owner() then
+        Left = false
+end
+if key == 1024 and ply == owner() then
+        Right = false
+end
+if key == 8 and ply == owner() then
+        Forward = false
+end
+if key == 16 and ply == owner() then
+        Backward = false
+end
+if key == 2 and ply == owner() then
+        Jump = false
+end
+if key == 131072 and ply == owner() then
+        Sprint = false
+end
+    
+end)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+local movePos = Vector(0,0,0)
+local birbVelocity = Vector(0,0,0)  
+timer.create("BotSpawning", 0.01, 0, function()
+bird:setGravity(1)
+bird:setPos(chip():getPos() + movePos)
+
+
+
+
+
+movePos = movePos + birbVelocity
+
+if Jump then
+    birbVelocity.z = 5
+    Jump = false
+end
+print(birbVelocity)
+//print(bird:isOnGround())
+if birbVelocity.x > 0 then birbVelocity.x = birbVelocity.x - 0.2 end
+
+if birbVelocity.y > 0 then birbVelocity.y = birbVelocity.y - 0.2 end
+
+if birbVelocity.x < 0 then birbVelocity.x = birbVelocity.x + 0.2 end
+
+if birbVelocity.y < 0 then birbVelocity.y = birbVelocity.y + 0.2 end
+
+
+if math.abs(birbVelocity.x) + math.abs(birbVelocity.y) < 0.2 then birbVelocity.x = 0 birbVelocity.y = 0 end
+
+
+if Forward then
+    birbVelocity.x = birbVelocity.x + (owner():getEyeAngles():getForward() * 0.4).x
+    birbVelocity.y = birbVelocity.y + (owner():getEyeAngles():getForward() * 0.4).y
+end
+
+if Backward then
+    birbVelocity.x = birbVelocity.x - (owner():getEyeAngles():getForward() * 0.4).x
+    birbVelocity.y = birbVelocity.y - (owner():getEyeAngles():getForward() * 0.4).y
+end
+
+if Right then
+    birbVelocity.x = birbVelocity.x + (owner():getEyeAngles():getRight() * 0.4).x
+    birbVelocity.y = birbVelocity.y + (owner():getEyeAngles():getRight() * 0.4).y
+end
+if Left then
+    birbVelocity.x = birbVelocity.x - (owner():getEyeAngles():getRight() * 0.4).x
+    birbVelocity.y = birbVelocity.y - (owner():getEyeAngles():getRight() * 0.4).y
+end
+//print(birbVelocity)
+
+
+
+
+if not bird:isOnGround() then birbVelocity.z = birbVelocity.z - 0.1 elseif birbVelocity.z <= 0 then birbVelocity.z = 0 end
+
+//if bird:isOnGround() and birbVelocity.x < 0.27 and birbVelocity.x > -0.27 then bird:setRunAct(6) bird:setIdleAct(1) end
+
+if bird:isOnGround() and birbVelocity.x < 0.27 and birbVelocity.x > -0.27 or bird:isOnGround() and birbVelocity.y < 0.27 and birbVelocity.y > -0.27 then 
+    bird:removeGotoPos()
+    bird:setRunAct(1) bird:setIdleAct(1)
+    bird:setGotoPos(bird:getPos())
+elseif bird:isOnGround() then
+    bird:removeGotoPos()
+    bird:setRunAct(6) bird:setIdleAct(6)
+    bird:setGotoPos(bird:getPos())
+end
+    
+    
+    
+    
+//if not bird:isOnGround() then bird:setRunAct(26) bird:setIdleAct(5) end
+
+bird:faceTowards( ( owner():getEyeAngles():getForward() * 20 ) + bird:getPos())
+bird:setGotoPos( ( owner():getEyeAngles():getForward() * 200 ) + bird:getPos())
+end)
+end
+
+
+if CLIENT then
+    
+    local tabl = {}
+    
+    net.receive("bird", function()
+        local bird = net.readEntity()
+        print("ha")
+        hook.add("calcview", "", function()
+            if isValid(bird) then
+                tabl["origin"] = bird:getPos() - ( eyeAngles():getForward() * 55)
+                tabl["drawviewer"] = true  
+                return tabl
+            end
+        end)
+        
+    end)
+    
+    
+    
+end

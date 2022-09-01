@@ -1,0 +1,30 @@
+--@name Problemo
+--@author
+--@shared
+hook.add("ClientInitialized", "", function(Player)
+    if SERVER == true then
+        local Bot
+        Bot = nextbot.create(chip():getPos(), "models/player/group01/male_07.mdl")
+        
+        net.start("BotUpdate")
+        net.writeEntity(Bot)
+        net.send()
+    end
+end)
+
+if CLIENT == true then
+   net.receive("BotUpdate", function()
+    net.readEntity(function(ent)
+    
+        printTable(ent)
+        Bot = ent
+        
+    end)
+    
+    print(Bot)
+    
+    end) 
+    
+    
+    
+end

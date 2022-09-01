@@ -1,0 +1,17 @@
+--@name test holo cont
+--@author
+--@server
+
+Turret = prop.createSent(chip():getPos(),Angle(0,0,0),"gmod_wire_turret",true)
+Turret = prop.createSent(chip():getPos(),Angle(0,0,0),"gmod_wire_turret",true)
+Turret = prop.createSent(chip():getPos(),Angle(0,0,0),"gmod_wire_turret",true)
+Turret = prop.createSent(chip():getPos(),Angle(0,0,0),"gmod_wire_turret",true)
+Turret = prop.createSent(chip():getPos(),Angle(0,0,0),"gmod_wire_turret",true)
+Turret = prop.createSent(chip():getPos(),Angle(0,0,0),"gmod_wire_turret",true)
+Turret = prop.createSent(chip():getPos(),Angle(0,0,0),"gmod_wire_turret",true)
+Turret = prop.createSent(chip():getPos(),Angle(0,0,0),"gmod_wire_turret",true)
+
+Holo = holograms.create(chip():getPos(), Angle(0,180,0), tostring(owner():getModel()), Vector(1,1,1))
+
+
+Holo:setAnimation("gesture_voicechat")

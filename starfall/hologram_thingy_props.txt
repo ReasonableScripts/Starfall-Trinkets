@@ -1,0 +1,112 @@
+--@name Hologram thingy props
+--@author PurpleDismay
+--@server
+PlayerScale = 1
+PosRec = {}
+Scale = 2
+hook.add( "OnEntityCreated", "resetlist", function()
+if tog == 1 then
+holograms.removeAll()
+Array = {}
+for i=1,50 do
+    if (find.byClass( "prop_physics" )[i]) ~= nil then
+    print("hai")
+    Array[i] = holograms.create(chip():getPos(), Angle(0,0,0), tostring((find.byClass( "prop_physics" )[i]):getModel())) 
+ScaleTemp = (Array[1]:getScale())
+ ScaleTemp.x = PlayerScale/(Scale)
+ ScaleTemp.z = PlayerScale/(Scale)
+ ScaleTemp.y = PlayerScale/(Scale)
+ Array[i]:setScale(ScaleTemp)
+end
+end
+end
+end)
+
+
+hook.add( "EntityRemoved", "resetlist", function()
+if tog == 1 then
+holograms.removeAll()
+Array = {}
+for i=1,50 do
+    if (find.byClass( "prop_physics" )[i]) ~= nil then
+    print("hai")
+    Array[i] = holograms.create(chip():getPos(), Angle(0,0,0), tostring((find.byClass( "prop_physics" )[i]):getModel())) 
+ScaleTemp = (Array[1]:getScale())
+ ScaleTemp.x = PlayerScale/(Scale)
+ ScaleTemp.z = PlayerScale/(Scale)
+ ScaleTemp.y = PlayerScale/(Scale)
+ Array[i]:setScale(ScaleTemp)
+end
+end
+end
+end)
+
+
+
+holograms.removeAll()
+Array = {}
+for i=1,50 do 
+    if (find.byClass( "prop_physics" )[i]) ~= nil then
+    Array[i] = holograms.create(chip():getPos(), Angle(0,0,0), tostring((find.byClass( "prop_physics" )[i]):getModel())) 
+ScaleTemp = (Array[1]:getScale())
+ ScaleTemp.x = PlayerScale/(Scale)
+ ScaleTemp.z = PlayerScale/(Scale)
+ ScaleTemp.y = PlayerScale/(Scale)
+ Array[i]:setScale(ScaleTemp)
+if i >= 99 then
+tog = 1
+end
+end
+end
+
+
+
+
+
+
+timer.create("The Timer", .15, 0, function()
+
+
+
+
+
+ 
+
+for i=1,50 do
+ if Array[i] ~= nil then
+
+ 
+
+
+if find.byClass( "prop_physics" )[i] ~= nil then
+ pos = find.byClass( "prop_physics" )[i]:getPos()
+ 
+ Array[i]:setModel(tostring((find.byClass( "prop_physics" )[i]):getModel())) 
+
+
+ 
+
+
+
+
+ Array[i]:setAngles(((find.byClass( "prop_physics" )[i]):getAngles()))
+
+
+
+
+ chippos = chip():getPos()
+ chip():worldToLocal(pos) 
+ pos.x = (((chippos.x - pos.x)/Scale) + pos.x)
+
+ pos.z = (((chippos.z - pos.z)/Scale) + pos.z)
+
+ pos.y = (((chippos.y - pos.y)/Scale) + pos.y)
+
+
+ Array[i]:setPos(pos)
+end
+end
+
+
+end
+end)

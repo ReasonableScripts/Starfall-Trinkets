@@ -1,0 +1,892 @@
+--@name StarZetas
+--@author PurpleDismay & Pigeon
+--@shared
+
+
+
+MaxBots = 15
+
+SolidProps = false
+
+ChattyBots = false // WIP
+
+
+
+
+
+
+
+if SERVER then
+    local PlayerListAll = {}
+    PlayerListAll = find.allPlayers()
+    //EntityList[1] = chip()
+    
+if ChattyBots == true then  
+    tab = {}
+    tab["_original"] = [[
+    printColor(vec(255,255,50), "person", vec(255,255,255), ": test")
+    
+    
+    
+    
+    
+    ]]
+    tab["_name"] = "chat"
+
+    lol = prop.createSent(chip():getPos() + Vector(0,8,0), Angle(0,0,0), "gmod_wire_expression2", true, tab)
+end
+    
+    
+local Bot = {}
+local Time = {}
+local HoldType = {}
+local RandWeapon = {}
+local WeaponModel = {}
+local PropTime = {}
+local ZetaProp = {}
+local ActInc = {}
+
+local PlyMdlArr = {
+                "models/player/alyx.mdl",
+                "models/player/arctic.mdl",
+                "models/player/barney.mdl",
+                "models/player/breen.mdl",
+                //"models/player/charple.mdl",
+                "models/player/combine_soldier.mdl",
+                "models/player/combine_soldier_prisonguard.mdl",
+                "models/player/combine_super_soldier.mdl",
+                "models/player/corpse1.mdl",
+                "models/player/dod_american.mdl",
+                "models/player/dod_german.mdl",
+                "models/player/eli.mdl",
+                "models/player/gasmask.mdl",
+                "models/player/gman_high.mdl",
+                "models/player/guerilla.mdl",
+                "models/player/kleiner.mdl",
+                "models/player/leet.mdl",
+                "models/player/magnusson.mdl",
+                "models/player/monk.mdl",
+                "models/player/mossman.mdl",
+                "models/player/mossman_arctic.mdl",
+                "models/player/odessa.mdl",
+                "models/player/p2_chell.mdl",
+                "models/player/phoenix.mdl",
+                "models/player/police.mdl",
+                "models/player/police_fem.mdl",
+                "models/player/riot.mdl",
+                //"models/player/skeleton.mdl",
+                "models/player/soldier_stripped.mdl",
+                "models/player/swat.mdl",
+                "models/player/urban.mdl",
+                "models/player/zombie_classic.mdl",
+                "models/player/zombie_fast.mdl",
+                "models/player/zombie_soldier.mdl",
+                "models/player/group01/female_01.mdl",
+                "models/player/group01/female_02.mdl",
+                "models/player/group01/female_03.mdl",
+                "models/player/group01/female_04.mdl",
+                "models/player/group01/female_05.mdl",
+                "models/player/group01/female_06.mdl",
+                "models/player/group01/male_01.mdl",
+                "models/player/group01/male_02.mdl",
+                "models/player/group01/male_03.mdl",
+                "models/player/group01/male_04.mdl",
+                "models/player/group01/male_05.mdl",
+                "models/player/group01/male_06.mdl",
+                "models/player/group01/male_07.mdl",
+                "models/player/group01/male_08.mdl",
+                "models/player/group01/male_09.mdl",
+                "models/player/group02/male_02.mdl",
+                "models/player/group02/male_04.mdl",
+                "models/player/group02/male_06.mdl",
+                "models/player/group02/male_08.mdl",
+                "models/player/group03/female_01.mdl",
+                "models/player/group03/female_02.mdl",
+                "models/player/group03/female_03.mdl",
+                "models/player/group03/female_04.mdl",
+                "models/player/group03/female_05.mdl",
+                "models/player/group03/female_06.mdl",
+                "models/player/group03/male_01.mdl",
+                "models/player/group03/male_02.mdl",
+                "models/player/group03/male_03.mdl",
+                "models/player/group03/male_04.mdl",
+                "models/player/group03/male_05.mdl",
+                "models/player/group03/male_06.mdl",
+                "models/player/group03/male_07.mdl",
+                "models/player/group03/male_08.mdl",
+                "models/player/group03/male_09.mdl",
+                "models/player/group03m/female_01.mdl",
+                "models/player/group03m/female_02.mdl",
+                "models/player/group03m/female_03.mdl",
+                "models/player/group03m/female_04.mdl",
+                "models/player/group03m/female_05.mdl",
+                "models/player/group03m/female_06.mdl",
+                "models/player/group03m/male_01.mdl",
+                "models/player/group03m/male_02.mdl",
+                "models/player/group03m/male_03.mdl",
+                "models/player/group03m/male_04.mdl",
+                "models/player/group03m/male_05.mdl",
+                "models/player/group03m/male_06.mdl",
+                "models/player/group03m/male_07.mdl",
+                "models/player/group03m/male_08.mdl",
+                "models/player/group03m/male_09.mdl"
+}
+
+local PropMdlArr = {
+   "models/props_c17/FurnitureDresser001a.mdl",
+   "models/props_junk/wood_crate001a.mdl",
+            "models/props_combine/breendesk.mdl",
+            "models/props_lab/filecabinet02.mdl",
+            "models/props_junk/watermelon01.mdl",
+            "models/props_interiors/VendingMachineSoda01a.mdl",
+            "models/props_c17/oildrum001_explosive.mdl",
+            "models/props_junk/wood_crate002a.mdl",
+            "models/props_c17/furnitureStove001a.mdl",
+            "models/props_lab/kennel_physics.mdl",
+            "models/props_junk/TrashBin01a.mdl",
+            "models/noesis/donut.mdl",
+            "models/props_phx/construct/concrete_pipe01.mdl",
+            "models/maxofs2d/companion_doll.mdl",
+            "models/props_c17/FurnitureBathtub001a.mdl",
+            "models/props_lab/blastdoor001c.mdl",
+            "models/props_c17/FurnitureWashingmachine001a.mdl",
+            "models/props_lab/blastdoor001b.mdl",
+            "models/props_lab/blastdoor001a.mdl",
+            "models/props_wasteland/controlroom_filecabinet002a.mdl",
+            "models/props_wasteland/controlroom_storagecloset001a.mdl",
+            "models/props_wasteland/controlroom_storagecloset001b.mdl",
+            "models/props_wasteland/laundry_cart002.mdl",
+            "models/props_wasteland/laundry_dryer001.mdl",
+            "models/props_wasteland/laundry_dryer002.mdl",
+            "models/props_wasteland/laundry_washer001a.mdl",
+            "models/props_c17/Lockers001a.mdl",
+            "models/props_wasteland/laundry_washer003.mdl",
+            "models/props_wasteland/kitchen_stove002a.mdl",
+            "models/props_junk/TrashDumpster02.mdl",
+            "models/props_wasteland/kitchen_stove001a.mdl",
+            "models/props_junk/gascan001a.mdl",
+            "models/props_interiors/Furniture_Couch02a.mdl",
+            "models/props_interiors/Furniture_Couch01a.mdl",
+            "models/props_trainstation/trainstation_ornament001.mdl",
+            "models/props_wasteland/kitchen_fridge001a.mdl",
+            "models/props_docks/channelmarker_gib02.mdl",
+            "models/props_wasteland/medbridge_post01.mdl",
+            "models/props_wasteland/prison_celldoor001b.mdl",
+            "models/props_wasteland/prison_bedframe001b.mdl",
+            "models/props_wasteland/prison_shelf002a.mdl",
+            "models/props_wasteland/wheel01a.mdl",
+            "models/props_junk/Shoe001a.mdl",
+            "models/props_lab/monitor02.mdl",
+            "models/props_lab/servers.mdl",
+            "models/props_lab/workspace001.mdl",
+            "models/props_lab/workspace002.mdl",
+    "models/props_lab/workspace003.mdl",
+    "models/props_lab/workspace004.mdl",
+    "models/props_trainstation/bench_indoor001a.mdl",
+    "models/props_trainstation/payphone001a.mdl",
+    "models/props_trainstation/traincar_seats001.mdl",
+   "models/props_trainstation/trainstation_clock001.mdl",
+   "models/props_phx/facepunch_logo.mdl", 
+   "models/xqm/jetbody3.mdl", 
+   "models/XQM/Rails/gumball_1.mdl", 
+   "models/props_phx/construct/metal_plate_curve360x2.mdl", 
+   "models/maxofs2d/companion_doll.mdl", 
+   "models/maxofs2d/logo_gmod_b.mdl" , 
+   "models/props_phx/misc/bunker01.mdl" , 
+   "models/props_phx/cannon.mdl",
+   "models/nova/chair_wood01.mdl",
+   "models/props_phx/games/chess/board.mdl",
+   "models/mechanics/wheels/wheel_smooth_72w.mdl",
+   "models/props_phx/mk-82.mdl",
+   "models/props_phx/construct/windows/window_curve360x2.mdl",
+   "models/props_canal/boat002b.mdl",
+   "models/props_vehicles/car002a_physics.mdl" ,
+   "models/Items/car_battery01.mdl",
+   "models/props_junk/Wheebarrow01a.mdl",
+   "models/props_wasteland/cargo_container01.mdl",
+   "models/props_wasteland/cargo_container01b.mdl",
+   "models/props_wasteland/cargo_container01c.mdl",
+   "models/props_borealis/bluebarrel001.mdl"
+}
+//models/player/odessa.mdl
+
+
+if SolidProps == true then SolidProps = false else SolidProps = true end
+for i = 1, MaxBots do
+    
+    Bot[i] = holograms.create(Vector(0,0,50), Angle(0,0,0), "models/weapons/w_physics.mdl", Vector(0,0,0))
+    
+    //WeaponModel[i] = holograms.create(Vector(0,0,50), Angle(0,0,0), "models/weapons/w_physics.mdl", Vector(0,0,0))
+
+    Time[i] = 0
+    
+    PropTime[i] = 0
+end
+
+
+    
+
+    local TargetLook = 1
+    local Target = 1
+    
+    
+    
+    
+    
+    
+    
+    
+    
+local SpawnTimeLimit = -1
+    
+
+local Fill = 0
+timer.create("The Timer", 0.5, 0, function()
+    //print(FirstFill)
+    Fill = Fill + 1
+    if Fill < MaxBots +1 then
+    Bot[Fill]:remove()
+    end
+    
+    if Fill > MaxBots then
+        
+    Fill = MaxBots + 1 
+    
+    end
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+    for i = 1, #Bot do 
+        
+          if quotaTotalAverage() < quotaMax()*0.4 then
+            
+        
+        SpawnTimeLimit = SpawnTimeLimit - 1
+        
+        
+        
+        
+        if isValid(Bot[i]) == false and SpawnTimeLimit <= 0 then
+            WeaponModel[i] = holograms.create(chip():getPos() + Vector(0,0,50), Angle(0,0,0), "models/weapons/w_physics.mdl", Vector(0,0,0))
+            SpawnTimeLimit = 5
+            
+            RandPl = math.random(1,#PlyMdlArr)
+            if isValid(PlyMdlArr[RandPl]) == false then RandPl = math.random(1,#PlyMdlArr) end
+            Bot[i] = nextbot.create(chip():getPos(), tostring(PlyMdlArr[RandPl]))
+            if isValid(Bot[i]) then
+                
+            if Bot[i]:getAttachment(5) ~= nil then WeaponModel[i]:setParent(Bot[i], 5) end
+            
+            WeaponModel[i]:setSkin(1)
+            
+            
+            WeaponModel[i]:addEffects(EF.BONEMERGE)
+            local SpawnPos = (chip():getPos() + Vector(math.rand(-40,40) * 20,math.rand(-40,40) * 20,70))
+            Bot[i]:setPos(SpawnPos)
+            Bot[i]:setHealth(75)
+            
+            
+            
+            
+            
+            
+            Bot[i]:setJumpGapsAllowed(true)
+            Bot[i]:setClimbAllowed(true)
+            Bot[i]:setStepHeight(30)
+            Bot[i]:ragdollOnDeath(true)
+            Bot[i]:setAvoidAllowed(true)
+            
+           
+            
+            Time[i] = 0
+            
+            
+            RandWeapon = math.floor(math.rand(1,9))
+            if RandWeapon == 8 then
+            HoldType[i] = "smg"
+            end
+            if RandWeapon == 7 then
+            HoldType[i] = "shotgun"
+            end
+            if RandWeapon == 6 then
+            HoldType[i] = "toolgun"
+            end
+            if RandWeapon == 5 then
+            HoldType[i] = "revolver"
+            end
+            if RandWeapon == 4 then
+            HoldType[i] = "pistol"
+            end
+            if RandWeapon == 3 then
+            HoldType[i] = "crowbar"
+            end
+            if RandWeapon == 2 then
+            HoldType[i] = "physgun"
+            end
+            if RandWeapon == 1 then
+            HoldType[i] = "hands"
+            end
+            
+            if HoldType[i] == "crowbar" then
+                Bot[i]:setRunAct(1849)
+                Bot[i]:setIdleAct(1847)
+
+            end
+    
+            if HoldType[i] == "physgun" then
+                Bot[i]:setRunAct(1859)
+                Bot[i]:setIdleAct(1857)
+
+            end
+            
+            if HoldType[i] == "hands" then
+                Bot[i]:setRunAct(1779)
+                Bot[i]:setIdleAct(1777)
+
+            end
+            if HoldType[i] == "pistol" then
+                Bot[i]:setRunAct(1789)
+                Bot[i]:setIdleAct(1787)
+
+            end
+            if HoldType[i] == "revolver" then
+                Bot[i]:setRunAct(1665)
+                Bot[i]:setIdleAct(1663)
+
+            end
+            if HoldType[i] == "toolgun" then
+                Bot[i]:setRunAct(1665)
+                Bot[i]:setIdleAct(1663)
+
+            end
+            
+            if HoldType[i] == "shotgun" then
+                Bot[i]:setRunAct(1819)
+                Bot[i]:setIdleAct(1817)
+
+            end
+            
+            if HoldType[i] == "smg" then
+                Bot[i]:setRunAct(1799)
+                Bot[i]:setIdleAct(1797)
+
+            end
+    
+            Bot[i]:addDeathCallback("deaf", function(NextBot, Damage, Attacker, Inflictor, DamPos, DamForce, DamType)
+                
+                WeaponModel[i]:removeEffects(EF.BONEMERGE)
+                
+            end)
+            
+            Bot[i]:setGotoPos(Bot[i]:getPos() + Vector(math.rand(-100,100),math.rand(-100,100), 0) )
+            end
+            
+            if quotaTotalAverage() < quotaMax()*0.4 then
+                net.start("BotUpdate")
+                net.writeUInt( i, 5 )
+                net.writeEntity(Bot[i])
+                net.send()
+            end
+            
+        end
+        
+        
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        if isValid(Bot[i]) == true and Bot[i]:getClass() == "starfall_cnextbot" and quotaTotalAverage() < quotaMax()*0.4 then
+            
+            RandRun = math.rand(0,151)
+            RandCrouch = math.rand(0,151)
+            
+            if RandRun > 0 and RandRun < 112.5 then Run = true else Run = false end
+            if RandCrouch > 0 and RandCrouch < 5 then Crouch = true else Crouch = false end
+                
+            if Crouch then Run = false end    
+            
+            if Run then Bot[i]:setMoveSpeed(400) end
+            if Run == false and Crouch == false then Bot[i]:setMoveSpeed(200) end
+            if Crouch then Bot[i]:setMoveSpeed(60) ActInc[i] = 2 else ActInc[i] = 0 end
+            
+            
+            
+            
+            if HoldType[i] == "physgun" then
+                Bot[i]:setRunAct(1859 + ActInc[i])
+                Bot[i]:setIdleAct(1857 + (ActInc[i] * 1.5))
+                
+            end
+            
+            if HoldType[i] == "hands" then
+                Bot[i]:setRunAct(1779 + ActInc[i])
+                Bot[i]:setIdleAct(1777 + (ActInc[i] * 1.5))
+            end
+    
+            if HoldType[i] == "crowbar" then
+                Bot[i]:setRunAct(1879)
+                Bot[i]:setIdleAct(1877 + (ActInc[i] * 1.5))
+                
+                
+            end
+            
+            if HoldType[i] == "pistol" then
+                Bot[i]:setRunAct(1789 + ActInc[i])
+                Bot[i]:setIdleAct(1787 + (ActInc[i] * 1.5))
+                
+                
+            end
+            if HoldType[i] == "revolver" then
+                Bot[i]:setRunAct(1665 + ActInc[i])
+                Bot[i]:setIdleAct(1663 + (ActInc[i] * 1.5))
+
+            end
+            if HoldType[i] == "toolgun" then
+                Bot[i]:setRunAct(1665 + ActInc[i])
+                Bot[i]:setIdleAct(1663 + (ActInc[i] * 1.5))
+
+            end
+            
+            if HoldType[i] == "shotgun" then
+                Bot[i]:setRunAct(1819 + ActInc[i])
+                Bot[i]:setIdleAct(1817 + (ActInc[i] * 1.5))
+
+            end
+            
+            if HoldType[i] == "smg" then
+                Bot[i]:setRunAct(1799 + ActInc[i])
+                Bot[i]:setIdleAct(1797 + (ActInc[i] * 1.5))
+
+            end
+            
+            
+            if Bot[i]:getRunAct() == 1879 + ActInc[i] or Bot[i]:getIdleAct() == 1877 + (ActInc[i] * 1.5) then WeaponModel[i]:setModel("models/weapons/w_crowbar.mdl") end
+            
+            if Bot[i]:getRunAct() == 1779 + ActInc[i] or Bot[i]:getIdleAct() == 1777 + (ActInc[i] * 1.5) then WeaponModel[i]:setNoDraw(true) else WeaponModel[i]:setNoDraw(false) end
+                
+            if Bot[i]:getRunAct() == 1859 + ActInc[i] or Bot[i]:getIdleAct() == 1857 + (ActInc[i] * 1.5) then WeaponModel[i]:setModel("models/weapons/w_physics.mdl") end
+            
+            if Bot[i]:getRunAct() == 1789 + ActInc[i] or Bot[i]:getIdleAct() == 1787 + (ActInc[i] * 1.5) then WeaponModel[i]:setModel("models/weapons/w_pistol.mdl") end
+            
+            if HoldType[i] == "toolgun" then WeaponModel[i]:setModel("models/weapons/w_toolgun.mdl") end
+            
+            if HoldType[i] == "revolver" then WeaponModel[i]:setModel("models/weapons/w_357.mdl") end
+
+            if Bot[i]:getRunAct() == 1819 + ActInc[i] or Bot[i]:getIdleAct() == 1817 + (ActInc[i] * 1.5) then WeaponModel[i]:setModel("models/weapons/w_shotgun.mdl") end
+            
+            if Bot[i]:getRunAct() == 1799 + ActInc[i] or Bot[i]:getIdleAct() == 1797 + (ActInc[i] * 1.5) then WeaponModel[i]:setModel("models/weapons/w_smg1.mdl") end
+            
+            local pos, ang = WeaponModel[i]:getAttachment(1)
+            
+            
+            
+            local pos2, ang2 = Bot[i]:getAttachment(12)
+            
+            //Bot[i]:setPose("aim_yaw",-1)
+            //print(Bot[i]:getPose("aim_yaw"))
+            
+            if math.floor(math.rand(1,6)) == 5 then
+                
+                
+                
+                if math.floor(math.rand(1,50)) == 2 then 
+                    HoldType[i] = "crowbar"
+                end
+                
+                if math.floor(math.rand(1,50)) == 20 then 
+                    HoldType[i] = "hands"
+                    
+                end
+                
+                if math.floor(math.rand(1,50)) == 18 then 
+                    HoldType[i] = "physgun"
+                end
+                
+                if math.floor(math.rand(1,50)) == 48 then 
+                    HoldType[i] = "pistol"
+                end
+                
+                if math.floor(math.rand(1,50)) == 26 then 
+                    HoldType[i] = "revolver"
+                end
+                
+                if math.floor(math.rand(1,50)) == 38 then 
+                    HoldType[i] = "toolgun"
+                end
+                
+                if math.floor(math.rand(1,50)) == 29 then 
+                    HoldType[i] = "shotgun"
+                end
+                
+                if math.floor(math.rand(1,50)) == 42 then 
+                    HoldType[i] = "smg"
+                end
+                
+            end
+            
+             
+            if Bot[i]:getGotoPos() ~= nil then
+            if (Bot[i]:getGotoPos() - Bot[i]:getPos()):getLength() < 80 then
+
+                Bot[i]:removeGotoPos()
+                Bot[i]:setMoveSpeed(200)
+            end
+            end
+            
+            
+            if Time[i] > 500 then
+                Bot[i]:removeGotoPos()
+                Bot[i]:setMoveSpeed(200)
+            end
+            
+            if Time[i] >= 15 + math.floor(math.rand(-10,10)) and quotaTotalAverage() < quotaMax()*0.4 then
+                TempGotoPos = Bot[i]:getGotoPos()
+                if TempGotoPos == nil then
+                    TempGotoPos = Bot[i]:getPos()
+                end
+                
+                
+                if (TempGotoPos - Bot[i]:getPos()):getLength() < 80 or TempGotoPos == nil  then
+                    
+                    Bot[i]:setGotoPos(Bot[i]:getPos() + Vector(math.rand(-1000,1000),math.rand(-1000,1000), 10) ) // This bit
+                    
+                    
+                    
+                    Time[i] = 0
+                end
+            end
+            
+            Time[i] = Time[i] + 1
+            
+        end
+        
+        
+        
+    end
+    
+    end
+    
+
+end)
+
+
+local PointAng
+
+    
+
+
+timer.create("playerupdate", 30, 0, function()
+    
+    PlayerListAll = find.allPlayers()
+end)
+local RandChoice = 150
+local PropCount = 0
+timer.create("test", 0.1, 0, function()
+        
+        for i = 1, MaxBots do
+        
+        RandChoice = math.random(0,15000*4)
+        //print(PropTime[i])
+        if isValid(Bot[i]) and Bot[i]:getClass() ~= "starfall_hologram" then 
+            if Bot[i]:getGotoPos() ~= nil then
+                Bot[i]:setPose("aim_yaw",0)
+                Bot[i]:setPose("aim_pitch",0)
+            end
+        end
+        
+        if RandChoice < 5025 and RandChoice > 5000 and PropCount < 2 and quotaTotalAverage() < quotaMax()*0.4 then
+        PropTime[i] = 12
+        if isValid(Bot[i]) and Bot[i]:getClass() ~= "starfall_hologram" then
+            AimRandYaw = math.random(-90,90)
+            AimRandPitch = math.random(35,-10)
+            
+            Bot[i]:removeGotoPos()
+            
+            
+            PropPos = trace.trace(Bot[i]:getEyePos(), ((Bot[i]:getEyeAngles() + Angle(AimRandPitch / 1.5, AimRandYaw,0) ):getForward() * 10000) + Bot[i]:getPos(), {Bot[i], WeaponModel[i]})
+            
+            
+            //tostring(PropMdlArr[math.random(1,30)])
+            if PropPos.Hit then
+                if PropPos.Entity:getClass() ~= "starfall_cnextbot" then
+                    ZetaProp = prop.create(PropPos.HitPos, Angle(0,0,0), tostring(PropMdlArr[math.random(1,#PropMdlArr)]), true)
+                    PropCount = PropCount + 1
+                    ZetaProp:setNocollideAll(SolidProps)
+                    if isValid(ZetaProp) then ZetaProp:setPos(Vector( 0, 0, (ZetaProp:obbSize().z/(2))) + PropPos.HitPos - ZetaProp:getMassCenter()) ZetaProp:setAngles(Angle(0,(Vector( 0, 0, ZetaProp:obbSize().z/2) + PropPos.HitPos - Bot[i]:getPos()):getAngle().yaw, 0)) end
+                end
+            end
+            
+            
+        if Bot[i]:getGotoPos() == nil then
+                    Bot[i]:setPose("aim_yaw",AimRandYaw)
+                    Bot[i]:setPose("aim_pitch",AimRandPitch)
+                    Bot[i]:setPose("head_yaw",AimRandPitch)
+                    Bot[i]:setPose("head_pitch",AimRandPitch)
+                elseif Bot[i]:getGotoPos() ~= nil then
+                    Bot[i]:setPose("aim_yaw",0)
+                    Bot[i]:setPose("aim_pitch",0)
+                    Bot[i]:setPose("head_yaw",AimRandYaw)
+                    Bot[i]:setPose("head_pitch",AimRandPitch)
+                    
+            end 
+            
+            
+            
+        end
+        end
+        Rand = math.random(1,#PlayerListAll)
+        if RandChoice > 5025 or RandChoice < 5000 and PropTime[i] <= 0 and quotaTotalAverage() < quotaMax()*0.4 then
+        if isValid(Bot[i]) and isValid(PlayerListAll[Rand]) and Bot[i]:getClass() ~= "starfall_hologram" then
+                                
+                if (PlayerListAll[Rand]:getPos() - Bot[i]:getPos()):getLength() < 200 then
+                PointAng = Bot[i]:worldToLocalAngles(((Bot[i]:getPos() - PlayerListAll[Rand]:getPos()):getAngle()) - Angle(0,180,0))
+                
+                if Bot[i]:getGotoPos() == nil then
+                    Bot[i]:setPose("aim_yaw",PointAng.yaw)
+                    Bot[i]:setPose("aim_pitch",-PointAng.pitch)
+                    Bot[i]:setPose("head_yaw",PointAng.yaw)
+                    Bot[i]:setPose("head_pitch",-PointAng.pitch)
+                elseif Bot[i]:getGotoPos() ~= nil then
+                    Bot[i]:setPose("aim_yaw",0)
+                    Bot[i]:setPose("aim_pitch",0)
+                    Bot[i]:setPose("head_yaw",PointAng.yaw)
+                    Bot[i]:setPose("head_pitch",-PointAng.pitch)
+                    
+                end
+                
+                
+            end
+
+            
+        end
+        end
+        
+        PropTime[i] = PropTime[i] - 0.1
+        
+        if PropTime[i] < 0 then PropTime[i] = 0 end
+        end
+        PropCount = 0
+
+    end)
+
+
+
+
+
+
+end
+
+
+
+if CLIENT then
+    local bot = {}
+    local botRef = {}
+
+
+
+
+
+
+
+    local SpeakerHolo = {}
+
+    SpeakerIcon = render.createMaterial(
+        "voice/icntlk_pl",
+        function(_,_,_,_,size)
+        size(0,0,1024,1024)
+        end
+    )
+    
+    SpeakerIcon:setInt("$flags", 2097152)
+    local SpeakerTime = {}  
+    
+    
+    for i = 1, MaxBots do
+            SpeakerHolo[i] = holograms.create(chip():getPos() + Vector(0,0,52), Angle(90,0,0), "models/hunter/plates/plate1x1.mdl", Vector(0.35,0.35,0))
+            SpeakerHolo[i]:setMaterial("!"..SpeakerIcon:getName())
+            SpeakerHolo[i]:setScale(Vector(0,0,0))
+    end
+
+    
+
+    
+
+        
+    
+    
+    local Bot = class("Bot")
+local BotIdleSound = class("BotIdleSound")
+
+do -- Bot functions
+    function Bot:initialize(ent)
+        self.ent = ent
+        self.index = index
+        self.idleSound = BotIdleSound:new(ent)
+        
+    end
+    function Bot:think(t)
+        self.idleSound:think(t)
+        self.index = index
+        //if self.sound and not self.sound:isValid() then self.sound:stop() self.sound = nil end
+        //print(self.idleSound.sound)
+    end
+end
+
+
+
+
+
+
+
+
+
+do -- BotIdleSound functions
+    function BotIdleSound:initialize(ent)
+        self.ent = ent
+        self.loading = false
+        self.idleDelayTime = 0
+        self.index = index
+    end
+    function BotIdleSound:think(t)
+        
+        
+       if quotaTotalAverage() < quotaMax()*0.8 then 
+            
+            if isValid(self.sound) then
+                if isValid(self.ent) then
+                    self.sound:setPos(self.ent:getPos() + Vector(0,0,50))
+                end
+            elseif bass.soundsLeft() > 0 and not self.loading then
+                self:createSound()
+            end
+            
+        
+        
+        for i = 1, MaxBots do
+                    if isValid(SpeakerHolo[i]) then
+                    if isValid(self.sound) and self.index == i then 
+                        
+                        SpeakerHolo[i]:setScale(Vector(0.35,0.35,0))
+                        
+                    else
+                    
+                        if isValid(self.sound) == false and self.index == i then 
+                        
+                            
+                        //print(self.idleSound.sound)
+                            SpeakerHolo[i]:setScale(Vector(0,0,0))
+                        
+                        end
+                    end
+                    
+                    if isValid(botRef[i]) and SpeakerHolo[i]:getParent() == nil or isValid(botRef[i]) and isValid(SpeakerHolo[i]:getParent()) == false then
+                        SpeakerHolo[i]:setPos(botRef[i]:getPos() + Vector(0,0,80))
+                        SpeakerHolo[i]:setParent(botRef[i])
+                    end
+                    
+                    if isValid(botRef[i]) then
+                        SpeakerHolo[i]:setAngles((player():getPos() - botRef[i]:getPos()):getAngle() + Angle(90,0,0)) 
+                    end
+                    
+                    end
+                end
+    end
+    end
+    function BotIdleSound:createSound()
+        
+        
+
+        
+        
+        if math.random(0,250) == 50 then
+        
+        
+        self.loading = true
+        local url = "https://raw.githubusercontent.com/ReasonableScripts/StarZetaSounds/master/idle"..math.random(648)..".wav"
+        bass.loadURL(url, "3d noblock", function(snd)    
+            self.loading = false
+            if isValid(snd) then snd:setVolume(1) snd:setFade(500, 500) end
+            if isValid(snd) then
+                self.sound = snd        
+                local len = self.sound:getLength()
+                
+                
+                
+                timer.simple(len + self.idleDelayTime, function()
+                    snd:stop()
+                    self.sound = nil
+                    
+                    
+                    
+                end)
+                
+                
+                
+            end
+            
+            
+            
+        end)
+        
+    end
+    end
+end
+
+
+
+net.receive("BotUpdate", function()
+    index = net.readUInt( 5 )
+    
+    net.readEntity(function(ent)
+        if isValid(ent) then
+        botRef[index] = ent
+        bot[index] = Bot:new(ent, index)
+        end
+    end)
+end)
+
+    
+
+
+
+hook.add("think","",function()
+    
+
+    
+
+    local t = timer.curtime()
+    for _, bot in ipairs(bot) do
+        bot:think(t)
+        
+        
+        
+    end
+end)
+
+
+    
+end
+
+
+
+

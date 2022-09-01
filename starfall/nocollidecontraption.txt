@@ -1,0 +1,12 @@
+--@name NocollideContraption
+--@author
+--@server
+
+
+
+tabl = chip():isWeldedTo():getAllConstrained()
+print(#tablenum)
+for i=0,#tabl do
+    
+    
+end

@@ -1,0 +1,54 @@
+--@name Easy Media Viewer
+--@author PurpleDismay
+--@server
+
+local appearToggle = 0
+
+hook.add("KeyPress", "", function(ply,key)
+    
+    if ply == owner() and key == 262144 then appearToggle = appearToggle + 1 end
+    
+    if appearToggle > 1 then appearToggle = 0 end
+    
+end)
+
+hook.add("OnEntityCreated", "", function(ent)
+    if isValid(ent) and not timer.exists("Tv Positioning") then
+        if ent:getOwner() == owner() and ent:getClass() == "mediaplayer_tv" then
+            
+            timer.create("Tv Positioning", 0.25, 0, function()
+                if isValid(ent) then
+                    
+                ent:setNocollideAll(true)
+                
+                
+                
+                ent:setAngles( (owner():getPos() - owner():getPos() - owner():getEyeAngles():getForward() * 20):getAngle() )
+                
+    
+                    if owner():getEyeAngles().pitch < 35 or appearToggle == 0 then
+                        
+                        ent:setNoDraw(true)
+                        
+                        ent:setPos(Vector(0,0,0))
+                        
+                    elseif owner():getEyeAngles().pitch > 35 and appearToggle == 1 then
+                        
+                        ent:setNoDraw(false)
+                        
+                        ent:setPos(owner():getEyePos() - Vector(0,0,30) + owner():getEyeAngles():getForward() * 5)
+                    
+                    end
+                
+                
+                else
+                    timer.remove("Tv Positioning")
+                end
+            end)
+        else
+            return
+        end
+    else
+        return
+    end
+end)

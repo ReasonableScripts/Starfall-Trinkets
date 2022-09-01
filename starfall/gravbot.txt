@@ -1,0 +1,182 @@
+--@name GravBot
+--@author
+--@server
+local Velox = 0
+local Veloy = 0
+local Veloz = 0
+local GravVeloz = -10
+local tabl = {{},{}}
+f = 0
+Velocity = Vector(0,0,0)
+Gravity = Vector(0,0,0)
+speed = 0
+
+Arr = {}
+lol = prop.create(Vector(chip():getPos().x,chip():getPos().y,chip():getPos().z+37), Angle(90,0,0), "models/hunter/blocks/cube025x025x025.mdl", true)
+Arr[1] = holograms.create(chip():getPos(), Angle(0,0,0), "models/hunter/blocks/cube025x025x025.mdl", Vector(1,1,1))
+HitboxPos = Vector(chip():getPos().x,chip():getPos().y,chip():getPos().z+807)
+Camera = holograms.create(chip():getPos(), Angle(0,0,0), "models/hunter/blocks/cube025x025x025.mdl", Vector(1,1,1))
+
+//Planet = prop.create(chip():getPos(), Angle(90,0,0), "models/hunter/blocks/cube2x2x2.mdl", false)
+
+//Planet:enableSphere(true)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+crouch = 0
+
+Left = 0
+Right = 0
+Forward = 0
+Backward = 0
+jump = 0
+
+hook.add("KeyRelease", "nam", function( ply, key )
+
+if key == 512 and ply == owner() then
+        Left = 0
+end
+if key == 1024 and ply == owner() then
+        Right = 0
+end
+if key == 8 and ply == owner() then
+        Forward = 0
+end
+if key == 16 and ply == owner() then
+        Backward = 0
+end
+if key == 2 and ply == owner() then
+        jump = 0
+end
+
+end)
+
+
+hook.add("KeyPress", "nam", function( ply, key )
+
+if key == 512 and ply == owner() then
+        Left = 99
+end
+if key == 1024 and ply == owner() then
+        Right = 99
+end
+if key == 8 and ply == owner() then
+        Forward = 99
+end
+if key == 16 and ply == owner() then
+        Backward = 99
+end
+if key == 2 and ply == owner() then
+        jump = 99
+end
+
+end)
+
+
+timer.create("The Timer", 0.01, 0, function()
+    
+    
+    
+   // Planet:enableSphere(true)
+    
+
+    
+
+    
+    
+//owner():setViewEntity(lol)
+ang = owner():getEyeAngles():getForward() 
+Hit = trace.traceHull(HitboxPos,Arr[1]:getPos(),lol:obbMins(),lol:obbMaxs(),lol)
+lol:setPos(HitboxPos)
+
+
+Arr[1]:setPos(chip():getPos())
+
+//print((Hit.HitPos-lol:getPos()))
+
+if (Arr[1]:getPos()-lol:getPos()):getLength() ~= 0 then
+Gravity = (Arr[1]:getPos()-lol:getPos()):getNormalized()
+
+Force = (6.67 * 150 / (Arr[1]:getPos()-lol:getPos()):getLength())
+if (Hit.HitPos-lol:getPos()):getLength() > (Force) then
+
+
+if jump > 66 then
+   Force = -50
+end
+
+HitboxPos = HitboxPos + (Gravity*Force)
+
+end
+if Forward < 1 and Backward < 1 and Left > 66 and Right < 1 then
+HitboxPos = HitboxPos + ((-Gravity*0.5):cross(owner():getEyeAngles()))
+end
+if Forward < 1 and Backward < 1 and Left < 1 and Right > 66 then
+HitboxPos = HitboxPos - ((-Gravity*0.5):cross(owner():getEyeAngles()))
+end
+
+if Forward > 66 and Backward < 1 and Left < 1 and Right < 1 then
+HitboxPos = HitboxPos - (-Gravity:cross(-Gravity:cross(owner():getEyeAngles())))
+end
+if Forward < 1 and Backward > 66 and Left < 1 and Right < 1 then
+HitboxPos = HitboxPos + (-Gravity:cross(-Gravity:cross(owner():getEyeAngles())))
+end
+
+
+
+
+end
+//Velocity.x = (-((speed) * math.cos(ang)))
+//Velocity.y = (((speed) * math.sin(ang)))
+ 
+
+
+Camera:setPos(lol:getForward()+lol:getPos())
+
+lol:setAngles((-(Gravity)):getAngle())
+
+
+
+end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

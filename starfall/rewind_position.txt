@@ -1,0 +1,56 @@
+--@name Random Teleportation
+--@author PurpleDismay
+--@server
+
+own = chip():isWeldedTo()
+lol = own:getPos()
+bob = own:getVelocity()
+lol2 = own:getAngles()
+
+
+
+timer.create("The Timer", 0, 0, function()
+lol = own:getPos()
+pop = own:getVelocity()
+gay = math.rand(0,1000)
+own:setNocollideAll(true)
+//print(gay)
+//if gay > 499 and gay < 500 or gay < 501 and gay > 500 then
+//timer.stop("The Timer")
+//print("stopped")
+//end
+
+
+lx = math.rand(-15343,15343)
+ly = math.rand(-15343,15343)
+lz = math.rand(-12050,12000)
+
+
+    
+    local mins = own:obbMins()
+    local maxs = own:obbMaxs()
+    local startpos = Vector(lx,ly,lz)//own:getPos()
+    local dir = own:getUp()
+    local len = 128
+
+
+own:setVelocity(pop)
+
+
+local tr = trace.traceHull(startpos, startpos + dir * len, mins, maxs, own)
+//print(tr.HitWorld,tr.HitPos)
+if tr.Hit  == false then
+own:setPos(Vector(lx,ly,lz))
+own:setVelocity(pop)
+
+
+else
+lx = math.rand(-15343,15343)
+ly = math.rand(-15343,15343)
+lz = math.rand(-2050,12000)
+local tr = trace.traceHull(startpos, startpos + dir * len, mins, maxs, own)
+end
+
+
+
+end)

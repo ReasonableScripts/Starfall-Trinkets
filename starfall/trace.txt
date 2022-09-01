@@ -1,0 +1,50 @@
+--@name Trace
+--@author
+--@shared
+x = {}
+y = {}
+cx = {}
+cy = {}
+i = 0
+i2 = 0
+
+
+//local rtMaterial = material.create( "UnlitGeneric" )
+//rtMaterial:setTextureRenderTarget( "$basetexture", "Buffer" )
+
+hook.add("render","Trace",function()
+    if render.renderTargetExists("Buffer") == false then
+        render.createRenderTarget("Buffer")
+        
+    end
+    render.selectRenderTarget("Buffer")
+    render.enableDepth(true)
+
+    
+    
+    pos = chip():getPos()
+
+    for i = 0,100 do
+        for i2 = 0,100 do
+    
+
+            local tr = trace.trace(chip():getPos(), Vector((pos.x+((-((-i)+25))*75)),pos.y+5000,(pos.z+500)+((-i2)*75)), chip())
+
+
+
+
+
+            color = math.abs(((((pos.y+1500)-((tr.HitPos).y))))*5)/(25)
+            //print(color)
+            if tr.Hit == true then
+
+                render.setColor(Color(color,color,color,color))
+                render.drawRect(i*5, i2*5, 5, 5)
+            end
+
+        end
+    end
+    render.selectRenderTarget(nil)
+    render.setRenderTargetTexture("Buffer")
+    
+end)

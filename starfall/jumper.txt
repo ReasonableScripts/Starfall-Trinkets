@@ -1,0 +1,103 @@
+--@name Jumper
+--@author PurpleDismay
+--@server
+
+
+
+
+
+
+Speed = 25
+timer.create("The Timer", 0.01, 0, function()
+    
+    
+    
+    hook.add( "KeyPress", "name", function( ply, key )
+if key == 1 and ply == owner() then
+        primary = 1
+end
+
+if key == 2 and ply == owner() then
+        up = 1
+end
+
+
+if key == 512 and ply == owner() then
+        Left = 1
+end
+if key == 1024 and ply == owner() then
+        Right = 1
+end
+if key == 8 and ply == owner() then
+        Forward = 1
+end
+if key == 16 and ply == owner() then
+        Backward = 1
+end
+
+
+if key == 131072 and ply == owner() then
+   sprint = 2
+end
+
+
+
+
+end)
+
+hook.add( "KeyRelease", "name", function( ply, key )
+if key == 1 and ply == owner() then
+        primary = 0
+end
+if key == 2 and ply == owner() then
+        up = 0
+end
+
+
+if key == 512 and ply == owner() then
+        Left = 0
+end
+if key == 1024 and ply == owner() then
+        Right = 0
+end
+if key == 8 and ply == owner() then
+        Forward = 0
+end
+if key == 16 and ply == owner() then
+        Backward = 0
+end
+
+if key == 131072 and ply == owner() then
+   sprint = 0
+end
+
+end)
+    
+    
+    
+    
+    
+    
+    
+    if sprint == 0 then Speed = 15 else Speed = 75 end
+    
+
+    
+    
+    if Forward == 1 then
+        owner():setVelocity(Vector( (owner():getEyeAngles():getForward()*Speed).x, (owner():getEyeAngles():getForward()*Speed).y, _))
+    end
+    if Backward == 1 then
+        owner():setVelocity(-Vector( (owner():getEyeAngles():getForward()*Speed).x, (owner():getEyeAngles():getForward()*Speed).y, _))
+    end
+    if Right == 1 then
+        owner():setVelocity(Vector( (owner():getEyeAngles():getRight()*Speed).x, (owner():getEyeAngles():getRight()*Speed).y, _))
+    end
+    if Left == 1 then
+        owner():setVelocity(-Vector( (owner():getEyeAngles():getRight()*Speed).x, (owner():getEyeAngles():getRight()*Speed).y, _))
+    end
+    
+    if up == 1 then
+        owner():setVelocity(Vector( _, _, (owner():getUp()*70).z ))
+    end
+end)

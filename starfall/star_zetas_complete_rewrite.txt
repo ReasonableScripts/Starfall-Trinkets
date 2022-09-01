@@ -1,0 +1,680 @@
+--@name Star Zetas complete rewrite
+--@author PurpleDismay, Pigeon and SnepDragon
+--@shared
+
+
+MAX_BOTS = 30
+
+hook.add("ClientInitialized", "", function()
+
+if SERVER then
+    
+    chip():setNocollideAll(true)
+    
+    local botsSpawned = 0
+    local bots = {}
+    local weaponHolograms = {}
+    local moveAttemptTime = {}
+    local lookingDirection = {}
+    local targetDirection = {}
+    local currentVehicle = {}
+    
+    
+    local awarenessBubble = {}
+    
+    for i = 0, MAX_BOTS do
+        lookingDirection[i] = Vector(0,0)
+        targetDirection[i] = Vector(0,0)
+    end
+    
+    local i = 1
+    
+    //:playSequence(string seqtoplay)
+    
+    local holdtypes = {
+    none = { idleActID = 1777, model = ""},
+    physgun = { idleActID = 1857, model = "models/weapons/w_physics.mdl"},
+    crowbar = { idleActID = 1877, model = "models/weapons/w_crowbar.mdl"},
+    pistol = { idleActID = 1787, model = "models/weapons/w_pistol.mdl"},
+    revolver = { idleActID = 1663, model = "models/weapons/w_357.mdl"},
+    toolgun = { idleActID = 1663, model = "models/weapons/w_toolgun.mdl"},
+    shotgun = { idleActID = 1817, model = "models/weapons/w_shotgun.mdl"},
+    smg = { idleActID = 1797, model = "models/weapons/w_smg1.mdl"},
+    crossbow = { idleActID = 1867, model = "models/weapons/w_crossbow.mdl"},
+    pulserifle = {idleActID = 1807, model = "models/weapons/w_irifle.mdl"}
+    }
+    
+    
+    local playerModels = {
+        "models/player/alyx.mdl",
+        "models/player/arctic.mdl",
+        "models/player/barney.mdl",
+        "models/player/breen.mdl",
+        //"models/player/charple.mdl",
+        "models/player/combine_soldier.mdl",
+        "models/player/combine_soldier_prisonguard.mdl",
+        "models/player/combine_super_soldier.mdl",
+        "models/player/corpse1.mdl",
+        "models/player/dod_american.mdl",
+        "models/player/dod_german.mdl",
+        "models/player/eli.mdl",
+        "models/player/gasmask.mdl",
+        "models/player/gman_high.mdl",
+        "models/player/guerilla.mdl",
+        "models/player/kleiner.mdl",
+        "models/player/leet.mdl",
+        "models/player/magnusson.mdl",
+        "models/player/monk.mdl",
+        "models/player/mossman.mdl",
+        "models/player/mossman_arctic.mdl",
+        "models/player/odessa.mdl",
+        "models/player/p2_chell.mdl",
+        "models/player/phoenix.mdl",
+        "models/player/police.mdl",
+        "models/player/police_fem.mdl",
+        "models/player/riot.mdl",
+        //"models/player/skeleton.mdl",
+        "models/player/soldier_stripped.mdl",
+        "models/player/swat.mdl",
+        "models/player/urban.mdl",
+        "models/player/zombie_classic.mdl",
+        "models/player/zombie_fast.mdl",
+        "models/player/zombie_soldier.mdl",
+        "models/player/group01/female_01.mdl",
+        "models/player/group01/female_02.mdl",
+        "models/player/group01/female_03.mdl",
+        "models/player/group01/female_04.mdl",
+        "models/player/group01/female_05.mdl",
+        "models/player/group01/female_06.mdl",
+        "models/player/group01/male_01.mdl",
+        "models/player/group01/male_02.mdl",
+        "models/player/group01/male_03.mdl",
+        "models/player/group01/male_04.mdl",
+        "models/player/group01/male_05.mdl",
+        "models/player/group01/male_06.mdl",
+        "models/player/group01/male_07.mdl",
+        "models/player/group01/male_08.mdl",
+        "models/player/group01/male_09.mdl",
+        "models/player/group02/male_02.mdl",
+        "models/player/group02/male_04.mdl",
+        "models/player/group02/male_06.mdl",
+        "models/player/group02/male_08.mdl",
+        "models/player/group03/female_01.mdl",
+        "models/player/group03/female_02.mdl",
+        "models/player/group03/female_03.mdl",
+        "models/player/group03/female_04.mdl",
+        "models/player/group03/female_05.mdl",
+        "models/player/group03/female_06.mdl",
+        "models/player/group03/male_01.mdl",
+        "models/player/group03/male_02.mdl",
+        "models/player/group03/male_03.mdl",
+        "models/player/group03/male_04.mdl",
+        "models/player/group03/male_05.mdl",
+        "models/player/group03/male_06.mdl",
+        "models/player/group03/male_07.mdl",
+        "models/player/group03/male_08.mdl",
+        "models/player/group03/male_09.mdl",
+        "models/player/group03m/female_01.mdl",
+        "models/player/group03m/female_02.mdl",
+        "models/player/group03m/female_03.mdl",
+        "models/player/group03m/female_04.mdl",
+        "models/player/group03m/female_05.mdl",
+        "models/player/group03m/female_06.mdl",
+        "models/player/group03m/male_01.mdl",
+        "models/player/group03m/male_02.mdl",
+        "models/player/group03m/male_03.mdl",
+        "models/player/group03m/male_04.mdl",
+        "models/player/group03m/male_05.mdl",
+        "models/player/group03m/male_06.mdl",
+        "models/player/group03m/male_07.mdl",
+        "models/player/group03m/male_08.mdl",
+        "models/player/group03m/male_09.mdl"
+    }
+    
+    
+    
+    
+    local weaponRemoval
+    
+   
+
+    
+    
+    function createBot()
+        if nextbot.canSpawn() then
+            RandomPosition = Vector( math.rand(-1000,1000), math.rand(-1000,1000), 0 )
+            tempBot = nextbot.create(chip():getPos() + RandomPosition + Vector(0,0,145), playerModels[math.random(1,#playerModels)])
+            
+            
+            
+            
+            //printTable(bots)
+            
+            table.insert(bots,tempBot)
+            
+            
+            
+            
+            
+            //if isValid(bots[i]) then
+                net.start("botCreated")
+                net.writeUInt( i, 5 )
+                net.writeEntity(tempBot)
+                net.send()
+            //end
+            weaponHolograms[i] = holograms.create(chip():getPos() + Vector(0,0,90) + RandomPosition, Angle(0,0,0), "models/weapons/w_physics.mdl", Vector(1,1,1))
+            weaponHolograms[i]:setParent(tempBot, 5)
+            weaponHolograms[i]:addEffects(EF.BONEMERGE)
+            weaponHolograms[i]:setSkin(1)
+
+            local weaponRemoval = weaponHolograms[i]
+            
+            tempBot:addDeathCallback("deaf", function()
+                
+                if isValid( weaponRemoval ) then
+                    
+                    weaponRemoval:removeEffects(EF.BONEMERGE)
+                    weaponRemoval:remove()
+                    
+                end
+                
+                if botsSpawned > 0 then 
+                    botsSpawned = botsSpawned - 1
+                end
+                
+            end)
+            
+            
+            
+
+            
+            
+            tempBot:setRunAct(1859)
+            tempBot:setIdleAct(1857)
+            tempBot:setMoveSpeed(200)
+            tempBot:setHealth(50)
+            tempBot:setDeathDropHeight(100)
+            tempBot:setClimbAllowed(true)
+            tempBot:setStepHeight(25)
+            tempBot:setGotoPos(tempBot:getPos() + Vector(math.rand(-1000,1000),math.rand(-1000,1000), 40) )
+            botsSpawned = botsSpawned + 1
+            
+        end
+    end
+    
+    timer.create("BotListValidation", 0.1, 0, function()
+        for il = 1, MAX_BOTS do
+            
+            if quotaTotalAverage() > quotaMax()*0.6 then currentVehicle[il] = nil end
+            
+            if isValid(currentVehicle[il]) then
+                if currentVehicle[il]:lookupAttachment("vehicle_feet_passenger0") ~= 0 then
+                    sitpos, sitang = currentVehicle[il]:getAttachment(currentVehicle[il]:lookupAttachment("vehicle_feet_passenger0"))
+                
+                
+                    if isValid(weaponHolograms[il]) then weaponHolograms[il]:setNoDraw(true) end
+                    
+                    bots[il]:playSequence("sit") 
+                    bots[il]:setPos(sitpos + Vector(0,0,1))
+                    bots[il]:setAngles(sitang)
+                    
+                    bots[il]:removeGotoPos()
+                    bots[il]:setGravity(0)
+                end
+            end
+            
+            if not isValid(currentVehicle[il]) then 
+                currentVehicle[il] = nil
+                if isValid(bots[il]) then bots[il]:setGravity(1000) bots[il]:setAngles(Angle(0,bots[il]:getAngles().yaw,0)) end
+            end
+            
+            
+            if not isValid(bots[il]) then 
+                table.remove(bots,il)
+                if botsSpawned > 0 then botsSpawned = botsSpawned - 1 end
+            end
+            
+        end
+        
+        
+    end)
+    
+    timer.create("BotSpawning", 1, 0, function()
+        
+        
+        
+        if botsSpawned < MAX_BOTS and not isValid(bots[i]) then
+            if quotaTotalAverage() < quotaMax()*0.6 then 
+                
+                createBot()
+                
+                
+                
+                
+            end
+        end
+        
+        
+        i = i + 1
+        
+        if i > MAX_BOTS then
+            i = 1
+        end
+        
+    end)
+    
+    --[[timer.create("BotAngles", 0.25, 0, function()
+        if quotaTotalAverage() < quotaMax()*0.4 then
+            for i = 1, #bots do
+                if isValid(bots[i]) then
+                    
+                    if math.random(0,10) == 5 then targetDirection[i] = Vector(math.rand(90,-90),math.rand(50,-90)) end
+                        
+                        lookingDirection[i].x = math.lerp(0.4,lookingDirection[i].x,targetDirection[i].x)
+                        lookingDirection[i].y = math.lerp(0.4,lookingDirection[i].y,targetDirection[i].y)
+                        
+                        if bots[i]:getVelocity() ~= Vector(0,0,0) then lookingDirection[i].x = 0 end
+                        
+                        
+                        bots[i]:setPose("head_yaw",lookingDirection[i].x)
+                        bots[i]:setPose("head_pitch",lookingDirection[i].y)
+                        bots[i]:setPose("aim_yaw",lookingDirection[i].x)
+                        bots[i]:setPose("aim_pitch",lookingDirection[i].y)
+                    end
+            end
+        end
+        
+    end)--]]
+    
+    
+    local i2 = 1
+    local randomMove
+    local randomSkin
+    local awarenessBubbleSorted = {}
+    local keys = {}
+    
+    timer.create("BotActivity", 0.1, 0, function()
+        
+        if isValid(bots[i2]) then
+            
+            if quotaTotalAverage() < quotaMax()*0.625 then
+                awarenessBubble[i2] = find.inBox(bots[i2]:getPos() + Vector(-120,-120,-120), bots[i2]:getPos() + Vector(120,120,120))
+                
+                botpos = bots[i2]:getPos()
+                
+                awarenessBubbleSorted = find.sortByClosest(awarenessBubble[i2], botpos, false)
+            end
+            
+            for i = 1, 20 do
+                if isValid(awarenessBubbleSorted[i]) then
+                    
+                    
+                    
+                    
+                    
+                    if awarenessBubbleSorted[i]:getClass():sub(1,12) == "prop_vehicle" and not isValid(awarenessBubbleSorted[i]:getDriver()) and currentVehicle[i2] == nil and awarenessBubbleSorted[i]:getClass() ~= "starfall_cnextbot" then
+                        
+                        currentVehicle[i2] = awarenessBubbleSorted[i]
+                        
+                        if math.random(0,25) == 5 and currentVehicle[i2] ~= nil then bots[i2]:setPos(currentVehicle[i2]:getPos() + currentVehicle[i2]:getRight() * 60) currentVehicle[i2] = nil bots[i2]:setGravity(1000) end
+                        
+                        
+                        
+                        vehicleFound = true
+                        
+                    elseif awarenessBubbleSorted[i]:getClass():sub(1,12) == "prop_vehicle" and isValid(awarenessBubbleSorted[i]:getDriver()) then
+                        
+                        bots[i2]:setPos(currentVehicle[i2]:getPos() + currentVehicle[i2]:getRight() * 60)
+                        currentVehicle[i2] = nil
+                        bots[i2]:setAngles(Angle(0,bots[i2]:getAngles().yaw,0))
+                        bots[i2]:setGravity(1000)
+                        vehicleFound = true
+                        
+                    end
+                    
+                    if awarenessBubbleSorted[i]:getClass() == "starfall_cnextbot" and awarenessBubbleSorted[i] ~= bots[i2] and currentVehicle[i2] ~= nil then
+                        
+                        bots[i2]:setPos(currentVehicle[i2]:getPos() + currentVehicle[i2]:getRight() * 60)
+                        currentVehicle[i2] = nil
+                        bots[i2]:setAngles(Angle(0,bots[i2]:getAngles().yaw,0))
+                        bots[i2]:setGravity(1000)
+                        vehicleFound = false
+                        
+                    end
+                    
+                    if vehicleFound == false and awarenessBubbleSorted[i]:getClass():sub(1,12) ~= "prop_vehicle" and currentVehicle[i2] ~= nil then
+                        
+                        bots[i2]:setPos(currentVehicle[i2]:getPos() + currentVehicle[i2]:getRight() * 60)
+                        currentVehicle[i2] = nil
+                        bots[i2]:setAngles(Angle(0,bots[i2]:getAngles().yaw,0))
+                        bots[i2]:setGravity(1000)
+                        
+                    end
+                    
+                    
+                end
+            end
+        end
+        
+        
+        if botsSpawned < 0 then botsSpawned = 0 end
+        
+        if moveAttemptTime[i2] == nil then moveAttemptTime[i2] = 0 end
+        
+        randomMove = math.random(0,1)
+        
+        
+        //print(i2, randomMove, isValid(bots[i2]), #bots, botsSpawned)
+        
+        if randomMove == 1 and isValid(bots[i2]) and currentVehicle[i2] == nil then
+            
+            
+            bots[i2]:setGotoPos(bots[i2]:getPos() + Vector(math.rand(-1000,1000),math.rand(-1000,1000), 0) )
+            moveAttemptTime[i2] = 250
+        end
+        
+        if isValid(bots[i2]) and moveAttemptTime[i2] <= 0 and currentVehicle[i2] == nil then
+           bots[i2]:removeGotoPos()
+        elseif moveAttemptTime[i2] > 0 then
+            moveAttemptTime[i2] = moveAttemptTime[i2] - 1
+        end
+        
+        
+        
+        
+        
+        
+        if isValid(bots[i2]) and quotaTotalAverage() < quotaMax()*0.4 then
+            
+            
+            
+            //printTable(awarenessBubble[i2])
+            
+            randomSprint = math.random(0,20)
+            
+            if randomSprint <= 10 then bots[i2]:setMoveSpeed(400) end
+            if randomSprint > 10 then bots[i2]:setMoveSpeed(200) end
+            
+            randomWeapon = math.random(1,200)
+            keys = table.getKeys(holdtypes)
+            
+            if randomWeapon <= #keys and randomWeapon > 0 and isValid(weaponHolograms[i2]) and holdtypes[keys[randomWeapon]].model ~= "" and currentVehicle[i2] == nil then                    
+
+                    weaponHolograms[i2]:setNoDraw(false)
+                    
+                    weaponHolograms[i2]:setModel(holdtypes[keys[randomWeapon]].model)
+                    
+                    if holdtypes[keys[randomWeapon]].model == "models/weapons/w_physics.mdl" then
+                        
+                        randomSkin = math.random(0,1)
+                        
+                        weaponHolograms[i2]:setSkin(randomSkin)
+                        
+                    end
+                    
+                    bots[i2]:setRunAct(holdtypes[keys[randomWeapon]].idleActID + 2)
+                    bots[i2]:setIdleAct(holdtypes[keys[randomWeapon]].idleActID)
+                    bots[i2]:removeGotoPos()
+                    //bots[i2]:setGotoPos(bots[i2]:getPos() + Vector(math.rand(-1000,1000),math.rand(-1000,1000), 0) )
+                    
+                    moveAttemptTime[i2] = 150
+                
+            elseif randomWeapon <= #keys and randomWeapon > 0 and isValid(weaponHolograms[i2]) and holdtypes[keys[randomWeapon]].model == nil and currentVehicle[i2] == nil then
+
+                weaponHolograms[i2]:setNoDraw(true)
+                
+                bots[i2]:setRunAct(holdtypes[keys[randomWeapon]].idleActID + 2)
+                bots[i2]:setIdleAct(holdtypes[keys[randomWeapon]].idleActID)
+                bots[i2]:removeGotoPos()
+                
+                //bots[i2]:setGotoPos(bots[i2]:getPos() + Vector(math.rand(-1000,1000),math.rand(-1000,1000), 40) )
+                moveAttemptTime[i2] = 150
+                
+            end
+            
+            if bots[i2]:getGotoPos() ~= nil then
+                if ( bots[i2]:getPos() - bots[i2]:getGotoPos() ):getLength() < 20 then
+                    bots[i2]:removeGotoPos()
+                    bots[i2]:setMoveSpeed(200)
+                    moveAttemptTime[i2] = 0
+                end
+            end
+        end
+        
+        
+        
+        
+        i2 = i2 + 1
+        
+        if i2 > MAX_BOTS then
+            i2 = 1
+        end
+        
+    end)
+    
+    
+    
+end
+
+end)
+
+if CLIENT then
+    local bot = {}
+    local botRef = {}
+    local flexes = {}
+    local weight = 0
+    
+    
+    local SpeakerHolo = {}
+
+    SpeakerIcon = render.createMaterial(
+        "voice/icntlk_pl",
+        function(_,_,_,_,size)
+        size(0,0,1024,1024)
+        end
+    )
+    
+    SpeakerIcon:setInt("$flags", 2097152) 
+    
+    
+    for i = 1, MAX_BOTS do
+        
+        SpeakerHolo[i] = holograms.create(chip():getPos() + Vector(0,0,52), Angle(90,0,0), "models/hunter/plates/plate1x1.mdl", Vector(0.35,0.35,0))
+        SpeakerHolo[i]:setMaterial("!"..SpeakerIcon:getName())
+        SpeakerHolo[i]:setScale(Vector(0,0,0))
+    
+    end
+
+
+    
+    
+    //--[[
+    
+    //--]]
+
+        
+    
+    
+    local Bot = class("Bot")
+local BotIdleSound = class("BotIdleSound")
+
+do -- Bot functions
+    
+    function Bot:initialize(ent)
+        
+        self.ent = ent
+        self.index = index
+        self.idleSound = BotIdleSound:new(ent)
+        
+    end
+    function Bot:think(t)
+        self.idleSound:think(t)
+        self.index = index
+        
+    end
+end
+
+
+
+
+
+
+
+
+
+do -- BotIdleSound functions
+    function BotIdleSound:initialize(ent)
+        self.ent = ent
+        self.loading = false
+        self.idleDelayTime = 0
+        self.index = index
+    end
+    function BotIdleSound:think(t)
+        if isValid(self.sound) and isValid(self.ent) then
+            flexes = {
+                self.ent:getFlexByName( "jaw_drop" ),
+                self.ent:getFlexByName( "left_part" ),
+                self.ent:getFlexByName( "right_part" ),
+                self.ent:getFlexByName( "left_mouth_drop" ),
+                self.ent:getFlexByName( "right_mouth_drop" )
+            }
+    
+            weight = isValid(self.sound) and math.clamp( self.sound:getLevels() * 2, 0, 2 ) or 0
+    
+            for k, v in pairs( flexes ) do
+            
+                self.ent:setFlexWeight( v, weight )
+    
+            end
+        end
+        
+        if quotaTotalAverage() < quotaMax()*0.25 then 
+            
+            if isValid(self.sound) then
+                
+                if isValid(self.ent) then
+                    
+                    self.sound:setPos(self.ent:getPos() + Vector(0,0,50))
+                end
+            elseif bass.soundsLeft() > 0 and not self.loading and math.random(0,250) == 50 and quotaTotalAverage() < quotaMax()*0.25 and isValid(self.ent) then
+                self:createSound()
+            end
+            
+           
+        
+        
+        
+        
+        end
+        
+        
+        
+        
+        if isValid(SpeakerHolo[self.index]) then
+
+    
+                    if isValid(self.sound) then 
+                        
+                        SpeakerHolo[self.index]:setScale(Vector(0.35,0.35,0))
+                            
+                    elseif isValid(self.sound) == false then
+                        
+                        SpeakerHolo[self.index]:setScale(Vector(0,0,0))
+                            
+                end
+                        
+                    if isValid(self.ent) and isValid(self.sound) then
+                        
+                        
+                        
+                        targetAngle = ( player():getEyePos() - self.ent:getPos() ):getAngle()
+                        
+                        SpeakerHolo[self.index]:setAngles( Angle( 0, targetAngle.yaw, 0) + Angle(90,0,0))
+                        
+                    end
+                    
+        end
+        
+        
+        
+        
+    end
+    function BotIdleSound:createSound()
+        
+        self.loading = true
+        local url = "https://raw.githubusercontent.com/ReasonableScripts/StarZetaSounds/master/idle"..math.random(1,1380)..".wav"
+        bass.loadURL(url, "3d noblock", function(snd)    
+            self.loading = false
+            if isValid(snd) then snd:setVolume(1) snd:setFade(500, 500) end
+            if isValid(snd) then
+                self.sound = snd        
+                local len = self.sound:getLength()
+                
+                
+                
+                timer.simple(len + self.idleDelayTime, function()
+                    snd:stop()
+                    self.sound = nil
+                    
+                    
+                    
+                end)
+                
+                
+                
+            end
+            
+            
+            
+        end)
+        
+    end
+end
+
+
+
+net.receive("botCreated", function()
+    
+    index = net.readUInt( 5 )
+    
+    net.readEntity(function(ent)
+        
+        if isValid(ent) and ent:getClass() == "starfall_cnextbot" then
+            ent:setSheetColor(Color( math.random(0,255), math.random(0,255), math.random(0,255) ))
+            botRef[index] = ent
+            bot[index] = Bot:new(ent, index)
+            
+            if isValid(SpeakerHolo[index]) then
+                
+                SpeakerHolo[index]:setPos(ent:getPos() + Vector(0,0,74))
+                
+                SpeakerHolo[index]:setParent(ent)
+            
+            end
+        
+        end
+
+    end)
+
+end)
+
+
+hook.add("think","",function()
+    
+
+    
+
+    local t = timer.curtime()
+    for _, bot in ipairs(bot) do
+        bot:think(t)
+        
+        
+        
+    end
+    
+end)
+
+
+    
+end
+

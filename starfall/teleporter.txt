@@ -1,0 +1,89 @@
+--@name Teleporter
+--@author PurpleDismay
+--@server
+
+local Target
+local preTarget
+local eyeTrace
+local seat
+local timeExpand = 0
+local playerPos = owner():getPos() + Vector(0,0,40)
+local time2Expand = 0
+local playerPos2 = playerPos
+
+Ball = holograms.create(playerPos, Angle(0,0,0), "models/hunter/misc/sphere1x1.mdl", Vector(0,0,0))
+Ball:setColor(Color(20,200,255,200))
+Ball2 = holograms.create(playerPos, Angle(0,0,0), "models/hunter/misc/sphere1x1.mdl", Vector(0,0,0))
+Ball:suppressEngineLighting(true)
+Ball2:suppressEngineLighting(true)
+
+Ball:setMaterial("models/debug/debugwhite")
+Ball2:setMaterial("models/debug/debugwhite")
+
+timer.create("The Timer 2", 0.1, 0, function()
+    if not timer.exists("The Timer") then
+        timeExpand = timeExpand - 16
+        
+        if timeExpand < 0 then timeExpand = 0 end
+    end            
+end)
+
+
+hook.add("think","", function()
+    
+    if timer.exists("The Timer") then
+        playerPos = owner():getPos() + Vector(0,0,40)
+    end
+
+    Ball:setPos(playerPos)
+    
+    Ball2:setPos(playerPos2)
+    
+    Ball:setScale(Vector(timeExpand/50,timeExpand/50,timeExpand/50))
+end)
+
+hook.add("Playersay","said",function(player,text)
+
+    if text:sub(1,6) == "/goto " and player == owner() then
+        
+        timer.create("The Timer", 0.1, 0, function()
+            timeExpand = timeExpand + 20
+            Ball:setColor(Color(20,200,255 ,timeExpand*2))
+        end)
+        
+        timer.simple(0.75, function()
+            preTarget = find.playersByName( text:sub(7), false ,false )[1]
+            
+            if preTarget:isPlayer() == true and player == owner() then
+                Target = preTarget
+                print( "Going To Player: " .. Target:getName() )
+                eyeTrace = trace.trace(Target:getEyePos(), Target:getEyePos() + Target:getEyeAngles():getForward()*150, Target)
+                seat = prop.createSeat(eyeTrace.HitPos - Vector(0,0,0), Angle(0,Target:getEyeAngles().yaw,0), "models/props_junk/PopCan01a.mdl", true)
+                seat:setNoDraw(true)
+                seat:use(USE_ON,1)
+                seat:remove()
+                timer.remove("The Timer")
+                Ball:setColor(Color(20,200,255,200))
+                playerPos2 = owner():getPos() + Vector(0,0,40)
+                timer.create("The Timer 3", 0.1, 0 ,function() 
+                    time2Expand = time2Expand + 1
+                    
+                    Ball2:setScale(Vector(time2Expand/2,time2Expand/2,time2Expand/2))
+                    Ball2:setColor(Color(20,200,255,255-(time2Expand*15)))
+                    
+                    if time2Expand*15 >= 255 then
+                        Ball2:setColor(Color(20,200,200,0))
+                        time2Expand = 0
+                        timer.remove("The Timer 3")
+                    end
+                    
+                end)
+                
+            
+            end
+        
+            
+        end)
+        return ""
+    end
+end)

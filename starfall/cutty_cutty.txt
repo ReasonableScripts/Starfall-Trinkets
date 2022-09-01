@@ -1,0 +1,18 @@
+--@name Cutty Cutty
+--@author
+--@server
+
+ControlDesk = {}
+
+
+for i = 1, 100 do
+    ControlDesk[i] = holograms.create(chip():getPos() + Vector(0,0,0), Angle(0,0,0), "models/props_borealis/bluebarrel001.mdl", Vector(1,1,1))
+end
+
+
+for i = 1, 100 do
+ControlDesk[i]:setClip(1, true, Vector(0,(-ControlDesk[i]:obbSize().x + (i-1) * 1.5),0), Vector(0,0.5,0), ControlDesk[i])
+ControlDesk[i]:setClip(2, true, Vector(0,(-ControlDesk[i]:obbSize().x + (i-1) * 1.5) + 1.5,0), Vector(0,-0.5,0), ControlDesk[i])
+
+ControlDesk[i]:setPos(ControlDesk[i]:getPos() + Vector(0,i * 5q,ControlDesk[i]:obbSize().z/2))
+end

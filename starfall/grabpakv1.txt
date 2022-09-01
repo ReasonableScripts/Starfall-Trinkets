@@ -1,0 +1,198 @@
+--@name GrabPackV1
+--@author
+--@server
+Left = prop.create(Vector(chip():getPos().x,chip():getPos().y-15,chip():getPos().z+50), Angle(0,0,0), "models/hunter/blocks/cube025x025x025.mdl", false)
+Right = prop.create(Vector(chip():getPos().x,chip():getPos().y+15,chip():getPos().z+50), Angle(0,0,0), "models/hunter/blocks/cube025x025x025.mdl", false)
+Body = prop.create(Vector(chip():getPos().x,chip():getPos().y,chip():getPos().z+50), Angle(0,0,0), "models/hunter/blocks/cube025x025x025.mdl", true)
+Body:setNocollideAll(true)
+Body:setNoDraw(true)
+constraint.rope(1, Left, Body, nil, nil, Vector(0,0,0), Vector(0,0,0),1000, 0, 0, 5, "cable/cable_lit", false, Color(255,255,255,255))
+constraint.rope(1, Right, Body, nil, nil, Vector(0,0,0), Vector(0,0,0),1000, 0, 0, 5, "cable/cable_lit", false, Color(255,255,255,255))
+Left:setColor(Color(255,10,10,255))
+Right:setColor(Color(10,10,255,255))
+
+//Right:suppressEngineLighting(true)
+BreakR = true
+GrabR = false
+YeetR = nil
+ShootR = false
+
+BreakL = true
+GrabL = false
+YeetL = nil
+ShootL = false
+
+Left:addCollisionListener(function(HitEntity)
+YeetL = HitEntity.HitEntity
+BreakL = false
+end)
+Right:addCollisionListener(function(HitEntity)
+YeetR = HitEntity.HitEntity
+BreakR = false
+end)
+
+
+Left:setFrozen(true)
+Left:setNocollideAll(true)
+Right:setFrozen(true)
+Right:setNocollideAll(true)
+
+
+
+
+timer.create("The Timer", 0.01, 0, function()
+    Body:setPos(Vector(owner():getPos().x,owner():getPos().y,owner():getPos().z+50))
+    
+    
+    
+    if isValid(YeetL) == true and hasPermission("constraints.weld", YeetL) then
+        if YeetL:getClass() == "prop_physics" and GrabL == false and BreakL == false then  
+        constraint.weld(Left, YeetL, nil, nil, 0, true) 
+        GrabL = true
+        end
+    end
+    
+    if isValid(YeetR) == true and hasPermission("constraints.weld", YeetR) then
+        if YeetR:getClass() == "prop_physics" and GrabR == false and BreakR == false then  
+        constraint.weld(Right, YeetR, nil, nil, 0, true) 
+        GrabR = true
+        end
+    end
+   //Left:addVelocity(owner():getForward()*1000)
+    
+    
+    if ShootL == false then
+    FpsPosL = ((owner():getEyeAngles()):getForward()*35)+owner():getEyePos() - (owner():getEyeAngles()):getRight()*28
+    FpsPosL.z = FpsPosL.z - 12.5
+    Left:setPos(FpsPosL)
+    Left:setAngles(owner():getEyeAngles())
+    end
+    
+    if ShootR == false then
+    FpsPosR = ((owner():getEyeAngles()):getForward()*35)+owner():getEyePos() + (owner():getEyeAngles()):getRight()*28
+    FpsPosR.z = FpsPosR.z - 12.5
+    Right:setPos(FpsPosR)
+    Right:setAngles(owner():getEyeAngles())
+    end
+    
+    
+end)
+
+
+
+
+
+
+
+
+
+hook.add( "KeyPress", "name", function( ply, key )   
+if key == 32 and ply == owner() then
+    //print(Break)
+    //print(Yeet)
+    
+    
+    //if isValid(Yeet) == true and hasPermission("constraints.weld", Yeet) then
+        //if Yeet:getClass() == "prop_physics" then  
+            
+            constraint.breakType(Left,"Weld")
+            BreakL = true
+            GrabL = false
+            YeetL = nil
+            
+        //end
+   // end
+end
+
+
+if key == 8192 and ply == owner() then
+    //print(Break)
+    //print(Yeet)
+    
+    
+    //if isValid(Yeet) == true and hasPermission("constraints.weld", Yeet) then
+        //if Yeet:getClass() == "prop_physics" then  
+            
+            constraint.breakType(Right,"Weld")
+            BreakR = true
+            GrabR = false
+            YeetR = nil
+            
+        //end
+   // end
+end
+
+if key == 1 and ply == owner() then
+
+        Left:setFrozen(false)
+        //constraint.setRopeLength(1, Body, 500)
+        VelocityAdd = owner():getEyeAngles():getForward()*5000
+        VelocityAdd.z = VelocityAdd.z * 1
+        Left:addVelocity(VelocityAdd)
+        Left:setAngles(owner():getEyeAngles())
+        //print(owner():getForward()*1000)
+        ShootL = true
+        Left:setNocollideAll(false)
+        
+        
+        
+        
+end
+if key == 2048 and ply == owner() then
+
+        Right:setFrozen(false)
+        //constraint.setRopeLength(1, Body, 500)
+        VelocityAdd = owner():getEyeAngles():getForward()*5000
+        VelocityAdd.z = VelocityAdd.z * 1
+        Right:addVelocity(VelocityAdd)
+        Right:setAngles(owner():getEyeAngles())
+        //print(owner():getForward()*1000)
+        ShootR = true
+        Right:setNocollideAll(false)
+        
+        
+        
+        
+end
+end)
+
+
+hook.add( "KeyRelease", "name", function( ply, key )   
+if key == 1 and ply == owner() then
+        Left:setFrozen(true)
+        Left:setVelocity(Vector(0,0,0))
+        FpsPosL = ((owner():getEyeAngles()):getForward()*35)+owner():getEyePos() - (owner():getEyeAngles()):getRight()*28
+        FpsPosL.z = FpsPosL.z + 12.5
+        Left:setPos(FpsPosL)
+        Left:setAngles(owner():getEyeAngles())
+        ShootL = false
+        Left:setNocollideAll(true)
+        //constraint.setRopeLength(1, Left, 1)
+end
+
+if key == 2048 and ply == owner() then
+        Right:setFrozen(true)
+        Right:setVelocity(Vector(0,0,0))
+        FpsPosR = ((owner():getEyeAngles()):getForward()*35)+owner():getEyePos() + (owner():getEyeAngles()):getRight()*28
+        FpsPosR.z = FpsPosR.z + 12.5
+        Right:setPos(FpsPosR)
+        Right:setAngles(owner():getEyeAngles())
+        ShootR = false
+        Right:setNocollideAll(true)
+        //constraint.setRopeLength(1, Left, 1)
+end
+
+
+
+
+
+if key == 32 and ply == owner() then
+   BreakL = false
+end
+
+if key == 8192 and ply == owner() then
+   BreakR = false
+end
+
+
+end)

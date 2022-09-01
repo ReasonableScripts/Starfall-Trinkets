@@ -1,0 +1,240 @@
+--@name GmodMonitor
+--@author PurpleDismay
+--@shared
+
+    
+    
+
+
+
+if CLIENT then
+
+BotPos = chip():getPos() - chip():getUp() * 120
+
+
+
+
+
+hook.add( "KeyPress", "name", function( ply, key )
+    
+    
+if key == 512 and ply == PlayingPlayer then
+        Left = true
+end
+if key == 1024 and ply == PlayingPlayer then
+        Right = true
+end
+if key == 8 and ply == PlayingPlayer then
+        Forward = true
+end
+if key == 16 and ply == PlayingPlayer then
+        Backward = true
+end
+if key == 2 and ply == PlayingPlayer then
+        Jump = true
+end
+
+end)
+
+
+hook.add( "KeyRelease", "name", function( ply, key )
+    
+    
+if key == 512 and ply == PlayingPlayer then
+        Left = false
+end
+if key == 1024 and ply == PlayingPlayer then
+        Right = false
+end
+if key == 8 and ply == PlayingPlayer then
+        Forward = false
+end
+if key == 16 and ply == PlayingPlayer then
+        Backward = false
+end
+if key == 2 and ply == PlayingPlayer then
+        Jump = false
+end
+    
+    
+    
+    
+end)
+
+
+
+
+
+
+
+
+
+
+
+render.createRenderTarget("myrendertarget")
+
+Bot = holograms.create(chip():getPos(), Angle(0,180,0), tostring(owner():getModel()), Vector(1,1,1))
+Bot:setAnimation("idle_all_01",nil,1) 
+local PlayerList = find.allPlayers()
+timer.create("PlayerUpdate", 2, 0, function()
+    PlayerList = find.allPlayers()
+    
+end)
+
+
+
+
+timer.create("The Timer", 0.25, 0, function()
+    //if PlayingPlayer:inVehicle() == false and PlayingPlayer == player() then watchAng = nil end
+    
+    
+    for i = 1, #PlayerList do
+        if isValid(PlayerList[i]) and HudActiv and quotaAverage() < quotaMax()*0.4 then
+            if PlayerList[i]:inVehicle() then
+                if PlayerList[i]:getVehicle():getOwner() == owner() then
+                    if PlayingPlayer ~= PlayerList[i] then watchAng = nil end
+                    PlayingPlayer = PlayerList[i]
+                    
+                    //Arr[0]:setPose("move_y",0)
+                    //Arr[0]:setPose("move_x",1)  
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                end
+            end
+        end
+    end
+    
+    if PlayingPlayer ~= nil and isValid(PlayingPlayer) then
+        if PlayingPlayer:inVehicle() then
+        Bot:setAngles(Angle(0,PlayingPlayer:getEyeAngles().yaw, 0))
+        //if player() == PlayingPlayer then Bot:setNoDraw(true) else Bot:setNoDraw(false) end
+        end
+    end
+end)
+
+
+
+
+
+
+Delay = 0
+
+
+
+local tabl = {}
+    hook.add("calcview", "", function()
+    
+    if player() ~= PlayingPlayer then watchAng = player():getEyeAngles() end
+    tabl["angles"] = watchAng
+    
+    return tabl
+    
+    
+end)
+BotPos = BotPos + Vector(0,0,50)
+local Gravity = Vector(0,0,0)
+local Speed = 3
+hook.add("think", "", function()
+    
+    if Forward == false and Backward == false then Bot:setPose("move_x",0) Bot:setAnimation("idle_all_01",nil,1) end
+    if Left == false and Right == false then Bot:setPose("move_y",0) Bot:setAnimation("idle_all_01",nil,1)  end
+    
+    
+    
+    Bot:setPos(BotPos)
+    if isValid(PlayingPlayer) then    
+        if PlayingPlayer:inVehicle() then
+            if PlayingPlayer:getVehicle():getOwner() == owner() then
+                if Forward then BotPos = BotPos + (Angle(0, PlayingPlayer:getEyeAngles().yaw, 0):getForward() * Speed) Bot:setAnimation("run_all_01",nil,1) Bot:setPose("move_x",1) end
+                if Backward then BotPos = BotPos - (Angle(0, PlayingPlayer:getEyeAngles().yaw, 0):getForward() * Speed) Bot:setAnimation("run_all_01",nil,1) Bot:setPose("move_x",-1) end
+                
+                if Right then BotPos = BotPos + (Angle(0, PlayingPlayer:getEyeAngles().yaw, 0):getRight() * Speed) Bot:setAnimation("run_all_01",nil,1) Bot:setPose("move_y",1) end
+                if Left then BotPos = BotPos - (Angle(0, PlayingPlayer:getEyeAngles().yaw, 0):getRight() * Speed) Bot:setAnimation("run_all_01",nil,1) Bot:setPose("move_y",-1) end
+                
+                if Jump then Gravity.z = - 2.5 Jump = false end
+            end
+        end
+    end
+    
+    
+    
+    GravTrace = trace.trace(BotPos + Vector(0,0,50) + (Bot:getEyeAngles():getForward()*6), BotPos - Vector(0,0,1 + Gravity.z) + (Bot:getEyeAngles():getForward()*6))
+    if GravTrace.Hit == true then Gravity.z = 0 end
+    if GravTrace.Hit == false then Gravity.z = Gravity.z + 0.2 end
+    
+    if GravTrace.HitPos.z > BotPos.z then BotPos.z = BotPos.z + Speed end
+    
+    BotPos = BotPos - Gravity
+    
+end)
+
+hook.add("renderscene","",function()
+    render.selectRenderTarget("myrendertarget")
+    HudActiv = render.isHUDActive()
+    if PlayingPlayer ~= nil and isValid(PlayingPlayer) and HudActiv and quotaAverage() < quotaMax()*0.4 then    
+        if PlayingPlayer:inVehicle() and screenPos ~= nil and HudActiv then
+            watchAng = ( (screenPos - Vector(0,0,2*11)) - PlayingPlayer:getPos() ):getAngle()
+            Pos = (Bot:getEyeAngles():getForward()*6) + Bot:getEyePos() + Vector(0,0,68)
+            Ang = PlayingPlayer:getEyeAngles() 
+        else
+            watchAng = nil
+        end  
+    end
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    scrW, scrH = render.getGameResolution()  
+    
+    if Delay >= 8 then
+    render.renderView({
+        w = scrW / 4,
+        h = scrH / 2,
+        angles = Ang,
+        origin = Pos,
+        aspectratio = scrW/scrH,
+        drawviewmodel = true,
+        drawviewer = true
+        
+    })
+    Delay = 0
+    end
+    
+    Delay = Delay + 1
+    
+end)
+
+hook.add("render","",function()
+    render.setRenderTargetTexture("myrendertarget")
+    render.drawTexturedRect(0,0,scrW/1.175,scrH)
+    screenPos = render.getScreenEntity():getPos()
+end)
+
+end

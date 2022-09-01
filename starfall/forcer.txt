@@ -1,0 +1,40 @@
+--@name Forcer
+--@author PurpleDismay
+--@server
+
+chip():setNocollideAll(true)
+
+timer.create("The Timer", 0, 0.1, function()
+
+Table = find.inSphere(chip():getPos(),500)
+
+for i = 1, #Table do
+    
+    
+    
+    
+    if isValid(Table[i]) == true and (chip():getPos()-Table[i]:getPos()):getLength() ~= 0 and Table[i] ~= nil and Table[i] ~= chip() then
+        Force = (chip():getPos()-Table[i]:getPos()):getLength()
+        if hasPermission("entities.applyForce",Table[i]) == true and hasPermission("entities.setVelocity",Table[i]) == true then
+            if Table[i]:getClass() == "prop_physics" and isValid(Table[i]) == true and Table[i] ~= game.getWorld() and Table[i] ~= nil then
+                
+                Gravity = ((chip():getPos()-Table[i]:getPos()):getNormalized())
+                Table[i]:addVelocity((Gravity*(Force/8)))
+                //Table[i]:enableGravity(false)
+            end
+    
+        end
+    
+    end
+    
+end
+
+
+
+
+
+
+
+
+
+end)

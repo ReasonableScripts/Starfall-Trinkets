@@ -1,0 +1,10 @@
+--@name tts
+--@author
+--@server
+Sound = holograms.create(chip():getPos(), Angle(0,0,0), "models/hunter/blocks/cube025x025x025.mdl", Vector(0,0,0))
+
+hook.add("Playersay","said",function(player,text)
+//print("http://tts.cyzon.us/tts?text=".."\""..text.."\"")
+    Sound:setPos(owner():getPos())
+    Sound:emitSound("http://tts.cyzon.us/tts?text=".."\""..text.."\"")
+    end)

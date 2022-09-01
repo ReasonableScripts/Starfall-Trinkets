@@ -1,0 +1,117 @@
+--@name RaytraceCamera
+--@author PurpleDismay
+--@shared
+
+if SERVER == true then
+hook.add("PlayerSay","said",function(player,text)
+net.start("SpokenText")
+net.writeString(text)
+net.writeEntity(player)
+net.send()
+end)
+end
+
+if CLIENT == true then
+local Camera = holograms.create(chip():getPos() - chip():getRight()*25, Angle(0,0,0), "models/hunter/blocks/cube025x025x025.mdl", Vector(.1,1,1))
+
+local PicTake = false
+local PicDisable = false
+
+local i = -1
+local i2 = -1
+
+net.receive("SpokenText", function()
+local text = net.readString()
+local player = net.readEntity()
+if player == owner() and text == "!pic" and PicTake == false then
+    PicTake = true
+    
+    Camera:setPos(Vector( owner():getPos().x, owner():getPos().y, owner():getPos().z + 58 ) + owner():getEyeAngles():getForward() * 40)
+    
+    Camera:setAngles(Angle( -owner():getEyeAngles().pitch, owner():getEyeAngles().yaw - 180, owner():getEyeAngles().roll - 180))
+end
+
+if player == owner() and text == "!retake" then
+    PicTake = true
+    PicDisable = true
+    i = -1
+    i2 = -1
+end
+if player == owner() and text == "!stop" and PicTake == true then
+    PicTake = false
+    PicDisable = true
+    i = -1
+    i2 = -1
+end
+
+end)
+
+
+
+CamDirection = {}
+CamDirection[1] = holograms.create(Camera:getPos() + (Camera:getUp()*5), (Camera:getUp()*2):getAngle(), "models/hunter/blocks/cube025x025x025.mdl", Vector(.15,.15,.15))
+
+render.createRenderTarget("RT")
+
+
+
+
+//minimum scale is 0.125
+//scale will default to 0.125 if set lower
+Scale = .25
+Fov = 100
+hook.add("renderoffscreen","",function()
+    render.selectRenderTarget("RT")
+    
+    if PicDisable == true then
+        render.clear()
+        PicDisable = false
+    end
+    
+    
+    CamDirection[1]:setPos(Camera:getPos() - (Camera:getUp()*8))
+    CamDirection[1]:setAngles(Camera:getAngles())
+    if Scale < 0.125 then Scale = 0.125 end
+    if PicTake == true then
+        
+        StartPos = Camera:getPos()
+        
+        StopPos = (Camera:getUp()*((i2 - (34/Scale))*((Fov*100)*Scale))) - (-Camera:getRight()*((i-(34/Scale))*((Fov*100)*Scale))) - Camera:getPos() - (Camera:getForward()*400000)
+        
+            
+        HitColor = render.traceSurfaceColor(StartPos, StopPos)
+        
+        if HitColor[1] <= 1 and HitColor[3] <= 1 and HitColor[3] <= 1 then
+            SkyDetect = trace.trace(StartPos, StopPos) 
+            if SkyDetect.HitSky == true then
+            HitColor = Color(52,122,168)
+            end
+        end
+        
+        render.setColor(HitColor)
+        render.drawRectFast(((i)*(((16)*Scale))+((16)*Scale))-16*Scale, ((i2)*(((16)*Scale))+((16)*Scale))-16*Scale, ((16)*Scale), ((16)*Scale))
+        
+        
+        
+        
+        if i > ((64)/Scale) then
+            i = -1
+            i2 = i2 + 1
+        end
+        if i2 > ((64)/Scale) then
+            i2 = 0
+            i = -1*(Scale)
+            PicTake = false
+            print("Done!")
+        end
+        i = i + 1
+    end
+    
+end)
+
+hook.add("render","",function()
+    render.setRenderTargetTexture("RT")
+    render.drawTexturedRect(0,0,512,512)
+end)
+
+end

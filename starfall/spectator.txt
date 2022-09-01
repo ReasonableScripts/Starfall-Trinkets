@@ -1,0 +1,52 @@
+--@name Spectator
+--@author PurpleDismay
+--@shared
+
+Model = "models/props_junk/watermelon01.mdl"
+
+
+
+
+if SERVER then
+    
+    hook.add("Playersay","said",function(player,text)
+        if text:sub(1,7) == "!swarm " then
+            local preTarget = find.playersByName( text:sub(8), false ,false )[1]
+            
+            if preTarget:isPlayer() == true and player == owner() then
+                Target = preTarget 
+                print( "Swarming Player: " .. Target:getName() )
+                net.start("Prop")
+                net.writeEntity(Target)
+                net.send()
+                return ""
+            end
+            
+            return true
+        end
+    end) 
+    
+end
+
+
+
+if CLIENT then
+
+if player() == owner() then enableHud(owner(),true) end
+
+local tabl = {}
+
+    net.receive("Prop", function()
+        local Prop = net.readEntity()
+        
+        hook.add("calcview", "", function()
+            if isValid(Prop) then
+                tabl["origin"] = Prop:getPos() - ( eyeAngles():getForward() * 250) + Vector(0,0,40)
+                tabl["drawviewer"] = true  
+                return tabl
+            end
+        end)
+        
+    end)
+    
+end

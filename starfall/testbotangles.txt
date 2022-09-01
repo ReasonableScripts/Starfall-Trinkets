@@ -1,0 +1,47 @@
+--@name TESTBOTANGLES
+--@author
+--@server
+
+local val1 = 0
+local val2 = 0
+
+AimRandYaw = math.random(-90,90)
+AimRandPitch = math.random(35,-10)
+
+bot = nextbot.create(chip():getPos(), "models/player/group03m/male_07.mdl")
+bot:setRunAct(1859)
+bot:setIdleAct(1857)
+bot:setGotoPos(bot:getPos())
+timer.create("The Timer", 0.1, 0, function()
+
+    print(val1)
+    val1 = math.lerp(0.4,val1,AimRandYaw)
+    val2 = math.lerp(0.4,val2,AimRandPitch)    
+
+    bot:setPose("head_yaw",val1)
+    bot:setPose("head_pitch",val2)
+    bot:setPose("aim_yaw",val1)
+    bot:setPose("aim_pitch",val2)
+    
+    if  math.abs( ( val1 - AimRandYaw ) ) < 10 then 
+        
+        val1 = AimRandYaw
+        
+        if math.random(0,50) == 5 then AimRandYaw = math.random(-90,90) AimRandPitch = math.random(-90,90) end
+        
+    end
+    
+    
+    if  math.abs( ( val2 - AimRandPitch ) ) < 10 then 
+    
+        val2 = AimRandPitch
+    
+        if math.random(0,50) == 5 then AimRandYaw = math.random(-90,90) AimRandPitch = math.random(-90,90) end
+    
+    end
+    
+//    z10% of 80 = X
+
+//    10/100 * 80 = X
+    
+end)

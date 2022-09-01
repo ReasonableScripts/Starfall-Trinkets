@@ -1,0 +1,71 @@
+--@name Rewind Starfall Ver.1
+--@author
+--@shared
+
+Lame = {}
+lol = {}
+playerCounter = 0
+frameCounter = 0
+overallFrames = 0
+Amt = 0
+
+    for I=0,#find.allPlayers() do
+    Lame[I] = holograms.create(player():getPos(), player():getAngles(), "models/Gibs/HGIBS.mdl")
+    end
+     
+
+    function Find() 
+        Players = find.allPlayers()
+    end
+    
+    Find()
+    
+    timer.create( "findTimer", 10, 0, function()
+        Find()
+    end)
+
+    
+
+hook.add("tick", "gay", function()
+
+for N,Player in pairs(Players) do
+ 
+ 
+ lol[playerCounter+(N*frameCounter)] = Player:getPos()
+     end
+ 
+frameCounter = frameCounter + 1
+overallFrames = overallFrames + 1
+
+
+
+Amt = Amt + 1
+
+if Amt > 50*frameCounter then
+Amt = 0
+end
+
+
+
+    if lol[Amt] == 1 then
+
+
+
+end
+
+
+
+
+end)
+frameCounter = 100
+hook.add("starfallUsed", "gay", function()
+for I = frameCounter,0 do
+for N,Player in pairs(Players) do
+
+Lame[N]:setPos(lol[N+((#find.allPlayers())*I)])
+
+end
+end
+
+
+end)

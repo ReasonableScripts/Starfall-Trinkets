@@ -1,0 +1,176 @@
+--@name ControlBot
+--@author PurpleDismay
+--@server
+i = 1
+pol = owner():getPos()
+lol = {}
+lol2 = {}
+Pos = owner():getPos()
+
+local BotNum = 30
+
+Num = 0
+MdlArr = {}
+MdlArr[Num] = "models/Humans/Group03/Male_01.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group02/male_02.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/male_03.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/Female_03.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/male_02.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/male_07.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group01/Female_07.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group01/Male_04.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03/male_06.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/male_09.mdl"
+Num = Num + 1
+
+MdlArr[Num] = "models/Humans/Group03m/Female_04.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group01/male_09.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/male_08.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/Female_06.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/Female_06.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/Female_02.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/Female_04.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03/Male_05.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03/male_08.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03m/Female_01.mdl"
+Num = Num + 1
+
+MdlArr[Num] = "models/Humans/Group02/Male_04.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03/Male_04.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/alyx.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Kleiner.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/odessa.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/mossman.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Barney.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/breen.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Eli.mdl"
+Num = Num + 1
+MdlArr[Num] = "models/Humans/Group03/Female_07.mdl"
+
+
+
+
+
+
+
+
+
+
+//lol[1]:setPos(Vector(0,0,0))
+
+local Target = chip()
+
+hook.add("Playersay","said",function(player,text)
+        if text:sub(1,7) == "!swarm " then
+            local preTarget = find.playersByName( text:sub(8), false ,false )[1]
+            
+            if preTarget:isPlayer() == true and player == owner() then
+                Target = preTarget
+                print( "Swarming Player: " .. Target:getName() )
+                return ""
+            else
+                if player == owner() then
+                print( "Could not swarm that player" )
+                return ""
+                end
+            end
+            
+            return true
+        end
+    end)
+
+local ie = 0
+timer.create("The Timer", 0.25, 0, function()
+    
+
+    if ie < BotNum then
+
+
+    lole = chip():getPos()
+    
+    lole.x = lole.x + (ie*80) + 80
+    
+    Rand = math.rand(0,9)
+    Rand2 = math.rand(0,30-BotNum)
+    Rand2 = math.floor(Rand2)
+    Rand = math.floor(Rand)
+  
+    
+    lol[ie] = nextbot.create(lole, tostring(MdlArr[Rand+Rand2]))
+    lol2[ie] = holograms.create(chip():getPos(), Angle(0,0,0), "models/hunter/blocks/cube025x025x025.mdl", Vector(0,0,0))
+    
+    
+
+
+
+    end
+
+
+    ie = ie + 1
+
+    
+
+if ie > BotNum then 
+
+
+    
+
+    for i=0,BotNum - 1 do
+    Pos = Target:getPos()
+   lol[i]:setGotoPos(Pos)
+   lol2[i]:setPos(lol[i]:getPos())
+    lik = math.rand(1,31)
+    lik = math.floor(lik)
+    
+    if lik < 10 then
+       h = "0"
+    else
+        h = "" 
+    end
+    
+    lol2[i]:emitSound("vo/npc/male01/question"..h..lik..".wav")
+    
+    // vo/npc/male01/question01.wav - vo/npc/male01/question31.wav
+//    Entity:getModel() 
+    //print(tostring(Target:getModel()))
+   //lol[i]:setModel(tostring(Target:getModel())) 
+    
+end
+ 
+  
+    
+    
+    
+end
+    
+    
+    
+    
+    
+end)

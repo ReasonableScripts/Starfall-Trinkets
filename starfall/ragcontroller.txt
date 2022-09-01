@@ -1,0 +1,212 @@
+--@name RagController
+--@author
+--@server
+
+Rag = chip():isWeldedTo()  
+lol = nextbot.create(chip():getPos(), "models/Humans/Group01/male_07.mdl")
+lol:setAvoidAllowed(false)
+lol:setColor(Color(0,0,0,0))
+lol:setNocollideAll(true)
+chip():setNocollideAll(true)
+Rag:setNocollideAll(true)
+lol:setStepHeight(25)
+Xpos = 0
+Ypos = 0
+Zpos = 0
+lel = 0
+ply = owner()
+//key = 8
+hook.add( "KeyPress", "name", function( ply, key )
+    lel = key
+end )
+hook.add("KeyRelease", "nam", function( ply, key )
+    lel2 = key
+end )
+pos = owner():getPos()
+hook.add( "calcview", "blah", function( pos, ang, fov, znear, zfar )
+    return {
+        origin = VECTOR,
+        angles = ANGLE,
+        fov = NUMBER or nil,
+        znear = NUMBER or nil,
+        zfar = NUMBER or nil,
+        drawviewer = BOOLEAN,
+        ortho = idkSomeBlackMagic,
+    }
+end )
+
+
+
+
+timer.create("The Timer", 0, 0, function()
+    owner():setViewEntity(Rag)
+    //print(Xpos, lel2)
+    
+    if lel == 8 and lel2 ~= 8 then
+    
+    //Xpos = Xpos + 1
+    
+    end    
+    
+    if lel2 == 8 then
+    lel = 0
+    end
+    
+     
+    Rag = chip():isWeldedTo()    
+    
+    //print(Xpos)
+    
+    
+    
+    Pos2 = owner():getPos()
+    Pos2.x = Pos2.x + Xpos
+    Pos2.y = Pos2.y + Ypos
+    Pos2.z = Pos2.z + Zpos
+
+    
+    lol:setGotoPos(Pos2)
+    
+    
+    
+    // = Rag:getPos()
+    //lok.z = lok.z + 150
+    
+   
+    
+    local pos, ang = lol:getBonePosition(6)
+    //ang.roll = ang.roll - 90
+    //ang.yaw = ang.yaw - 90
+    //ang.pitch = ang.pitch + 90
+    
+    //pos.x = pos.x + Xpos
+    //pos.y = pos.y + Ypos
+    //pos.z = pos.z + Zpos
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(6)):setAngles(ang)
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(6)):setPos(pos)    
+    //print(Rag:getBoneName(6))
+    
+    local pos, ang = lol:getBonePosition(3)
+   // pos.x = pos.x + Xpos
+   // pos.y = pos.y + Ypos
+ //   pos.z = pos.z + Zpos
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(3)):setAngles(ang)
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(3)):setPos(pos)
+    
+    local pos, ang = lol:getBonePosition(2)
+
+  //  pos.x = pos.x + Xpos
+  //  pos.y = pos.y + Ypos
+ //   pos.z = pos.z + Zpos
+    ang.pitch = ang.pitch - 0
+    ang.yaw = ang.yaw - 90
+    ang.roll = ang.roll + 90
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(2)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(2)):setPos(pos)
+    
+    local pos, ang = lol:getBonePosition(1)
+ //   pos.x = pos.x + Xpos
+ //   pos.y = pos.y + Ypos
+ //   pos.z = pos.z + Zpos
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(1)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(1)):setPos(pos)
+    
+    local pos, ang = lol:getBonePosition(0)
+ //   pos.x = pos.x + Xpos
+ //   pos.y = pos.y + Ypos
+  //  pos.z = pos.z + Zpos
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(0)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(0)):setPos(pos) 
+    
+    print(lol:getBoneName(18))
+    
+    
+    
+    local pos, ang = lol:getBonePosition(9)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(9)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(9)):setPos(pos)
+    
+    
+    local pos, ang = lol:getBonePosition(10)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(10)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(10)):setPos(pos)
+    
+    local pos, ang = lol:getBonePosition(11)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(11)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(11)):setPos(pos)
+    
+    
+    
+    local pos, ang = lol:getBonePosition(14)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(14)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(14)):setPos(pos)
+    
+    
+    local pos, ang = lol:getBonePosition(15)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(15)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(15)):setPos(pos)
+    
+    local pos, ang = lol:getBonePosition(16)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(16)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(16)):setPos(pos)
+    BoneNum = 18
+    
+    local pos, ang = lol:getBonePosition(BoneNum)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setPos(pos)
+    BoneNum = 19
+    
+    local pos, ang = lol:getBonePosition(BoneNum)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setPos(pos)
+    BoneNum = 20
+    
+    local pos, ang = lol:getBonePosition(BoneNum)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setPos(pos)
+    BoneNum = 22
+    
+    local pos, ang = lol:getBonePosition(BoneNum)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setPos(pos)
+    BoneNum = 23
+    
+    local pos, ang = lol:getBonePosition(BoneNum)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setPos(pos)
+    BoneNum = 24
+    
+    local pos, ang = lol:getBonePosition(BoneNum)
+    ang.yaw = ang.yaw - 0
+    ang.pitch= ang.pitch + 0
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setAngles(Angle(ang.pitch,ang.yaw,ang.roll))
+    Rag:getPhysicsObjectNum(Rag:translateBoneToPhysBone(BoneNum)):setPos(pos)
+    
+    
+end)

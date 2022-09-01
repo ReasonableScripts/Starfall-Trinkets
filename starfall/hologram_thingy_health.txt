@@ -1,0 +1,176 @@
+--@name Hologram thingy health
+--@author PurpleDismay
+--@server
+Array1 = {}
+Array2 = {}
+Array3 = {}
+test = 0
+PlayerScale = 1
+
+PosRec = {}
+
+Scale = 999999
+
+totalPlayers = #find.allPlayers()
+holograms.removeAll()
+Array1 = {}
+Array2 = {}
+Array3 = {}
+for i=1,totalPlayers do 
+    totalPlayers = #find.allPlayers()
+    Array1[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/player/mossman.mdl")
+    Array2[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/sprops/misc/alphanum/alphanum_l_a.mdl")
+     Array3[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/sprops/misc/alphanum/alphanum_l_a.mdl")
+ScaleTemp = (Array1[1]:getScale())
+ Array1[i]:setScale(ScaleTemp)
+ ScaleTemp.x = 1
+ ScaleTemp.z = 1
+ ScaleTemp.y = 1
+ Array2[i]:setScale(ScaleTemp)
+ Array3[i]:setScale(ScaleTemp)
+ PosRec[i] = owner():getPos()
+end
+
+
+hook.add( "PlayerConnect", "resetlist", function()
+
+totalPlayers = #find.allPlayers()
+holograms.removeAll()
+Array1 = {}
+Array2 = {}
+Array3 = {}
+for i=1,totalPlayers do 
+   
+    totalPlayers = #find.allPlayers()
+    Array1[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/player/mossman.mdl")
+    Array2[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/sprops/misc/alphanum/alphanum_l_a.mdl")
+     Array3[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/sprops/misc/alphanum/alphanum_l_a.mdl")
+ ScaleTemp = (Array1[1]:getScale())
+ Array1[i]:setScale(ScaleTemp)
+ScaleTemp.x = 0.25/(Scale)
+ ScaleTemp.z = 0.25/(Scale)
+ ScaleTemp.y = 0.25/(Scale)
+ Array2[i]:setScale(ScaleTemp)
+ Array3[i]:setScale(ScaleTemp)
+ PosRec[i] = owner():getPos()
+end
+end )
+
+hook.add( "PlayerDisconnect", "resetlist2", function()
+totalPlayers = #find.allPlayers()
+holograms.removeAll()
+Array1 = {}
+Array2 = {}
+for i=1,totalPlayers do 
+    totalPlayers = #find.allPlayers()
+    Array1[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/player/mossman.mdl")
+    Array2[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/sprops/misc/alphanum/alphanum_l_a.mdl")
+    Array3[i] = holograms.create(chip():getPos(), Angle(0,0,0), "models/sprops/misc/alphanum/alphanum_l_a.mdl")
+ ScaleTemp = (Array1[1]:getScale())
+ScaleTemp.x = 0.25/(Scale)
+ ScaleTemp.z = 0.25/(Scale)
+ ScaleTemp.y = 0.25/(Scale)
+ Array2[i]:setScale(ScaleTemp)
+Array3[i]:setScale(ScaleTemp)
+ PosRec[i] = owner():getPos()
+end
+end )
+
+
+
+Chip = chip()
+timer.create("The Timer", 0.25, 0, function()
+totalPlayers = #find.allPlayers()
+local chippos = chip():getPos()
+
+
+
+
+
+
+for i=1,totalPlayers do
+ 
+
+ 
+
+
+ if (find.allPlayers())[i]:isPlayer() == true then
+ pos = (find.allPlayers())[i]:getPos()
+
+
+
+
+//print("models/sprops/misc/alphanum/alphanum_"..(tostring((find.allPlayers())[i]:getHealth()))[1]..".mdl")
+//print("models/sprops/misc/alphanum/alphanum_"..(tostring((find.allPlayers())[i]:getHealth()))[2]..".mdl")
+if (find.allPlayers())[i]:getHealth() > 0 then
+    test4 = 0
+Array1[i]:setModel("models/sprops/misc/alphanum/alphanum_"..(tostring((find.allPlayers())[i]:getHealth()))[1]..".mdl")
+else
+test4 = 990999
+end
+if (find.allPlayers())[i]:getHealth() > 9 then
+    test3 = 0
+Array2[i]:setModel("models/sprops/misc/alphanum/alphanum_"..(tostring((find.allPlayers())[i]:getHealth()))[2]..".mdl")
+else
+    test3 = 990999
+end
+if (find.allPlayers())[i]:getHealth() > 99 then
+test = 0
+Array3[i]:setModel("models/sprops/misc/alphanum/alphanum_"..(tostring((find.allPlayers())[i]:getHealth()))[3]..".mdl")
+else
+test = 990999
+end
+
+
+//Array2[i]:setColor(team.getColor((find.allPlayers())[i]:getTeam()))
+
+
+
+ 
+
+ 
+ 
+
+
+ 
+
+//print(tostring((find.allPlayers())[i]:getModel()))
+ 
+
+end
+ chip():worldToLocal(pos) 
+ pos.x = (((chippos.x - pos.x)/Scale) + pos.x)
+
+ pos.z = (((chippos.z - pos.z)/Scale) + pos.z)
+
+ pos.y = (((chippos.y - pos.y)/Scale) + pos.y)
+
+  
+ pos.z = pos.z + 25*5
+if (find.allPlayers())[i]:isAlive() == false then
+ pos.z = 25*9999999
+ pos.x = pos.x + 15
+pos.z = pos.z + test4
+ Array1[i]:setPos(pos)
+ pos.x = pos.x - 15
+pos.z = pos.z + test3
+ Array2[i]:setPos(pos)
+ pos.x = pos.x - 15
+ pos.z = pos.z + test
+ Array3[i]:setPos(pos)
+end
+
+if (find.allPlayers())[i]:isAlive() == true then
+ pos.x = pos.x + 15
+pos.z = pos.z + test4
+ Array1[i]:setPos(pos)
+ pos.x = pos.x - 15
+pos.z = pos.z + test3
+ Array2[i]:setPos(pos)
+ pos.x = pos.x - 15
+ pos.z = pos.z + test
+ Array3[i]:setPos(pos)
+end
+
+end
+end)

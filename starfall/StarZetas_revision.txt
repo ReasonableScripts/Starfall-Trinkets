@@ -1,0 +1,754 @@
+--@name StarZetas
+--@author PurpleDismay & Pigeon (Revised by Snepdragon)
+
+--@shared
+
+--[[
+    Hi! I'm Snepdragon! I was requested by Purple to see about refactoring the original codebase.
+    I'll be leaving some notes here, as well as throughout the code.
+
+    - TODO: No switches
+    - TODO: Function to set bot weapon and holdtypes
+]]
+
+local MAX_BOTS = 15 -- Constant
+local solidProps = false -- Not constant
+local spawnTimeLimit = -1
+--local CHATTY_BOTS_ENABLED = false -- WIP
+
+local QUOTA_MULTI = 0.4 -- 'fraction' between 0 and 1
+
+if SERVER then
+    local allPlayers = find.allPlayers()
+    --entityList[1] = chip()
+
+    --[[
+    if CHATTY_BOTS_ENABLED then -- changed _orginal formatting to clean up, unsure if it works.
+        local chipData = {
+            _original = "printColor(vec(255, 255, 50), "person", vec( 255, 255, 255 ), "test" )",
+            _name = "chat"
+        }
+
+        prop.createSent( chip():getPos() + Vector( 0, 8, 0 ), Angle( 0 ), "gmod_wire_expression2", true, chipData )
+    end
+    ]]
+
+    local bots = { -- Attempt to redesign the bots data as one table, with a subtable for each bot.
+        -- {} -- TODO: Populate example data properly
+    }
+
+    local zetaProp
+
+    local playerModels = {
+        "models/player/alyx.mdl",
+        "models/player/arctic.mdl",
+        "models/player/barney.mdl",
+        "models/player/breen.mdl",
+        --"models/player/charple.mdl", -- CFC blacklisted
+        "models/player/combine_soldier.mdl",
+        "models/player/combine_soldier_prisonguard.mdl",
+        "models/player/combine_super_soldier.mdl",
+        "models/player/corpse1.mdl",
+        "models/player/dod_american.mdl",
+        "models/player/dod_german.mdl",
+        "models/player/eli.mdl",
+        "models/player/gasmask.mdl",
+        "models/player/gman_high.mdl",
+        "models/player/guerilla.mdl",
+        "models/player/kleiner.mdl",
+        "models/player/leet.mdl",
+        "models/player/magnusson.mdl",
+        "models/player/monk.mdl",
+        "models/player/mossman.mdl",
+        "models/player/mossman_arctic.mdl",
+        "models/player/odessa.mdl",
+        "models/player/p2_chell.mdl",
+        "models/player/phoenix.mdl",
+        "models/player/police.mdl",
+        "models/player/police_fem.mdl",
+        "models/player/riot.mdl",
+        --"models/player/skeleton.mdl", -- CFC blacklisted
+        "models/player/soldier_stripped.mdl",
+        "models/player/swat.mdl",
+        "models/player/urban.mdl",
+        "models/player/zombie_classic.mdl",
+        "models/player/zombie_fast.mdl",
+        "models/player/zombie_soldier.mdl",
+        "models/player/group01/female_01.mdl",
+        "models/player/group01/female_02.mdl",
+        "models/player/group01/female_03.mdl",
+        "models/player/group01/female_04.mdl",
+        "models/player/group01/female_05.mdl",
+        "models/player/group01/female_06.mdl",
+        "models/player/group01/male_01.mdl",
+        "models/player/group01/male_02.mdl",
+        "models/player/group01/male_03.mdl",
+        "models/player/group01/male_04.mdl",
+        "models/player/group01/male_05.mdl",
+        "models/player/group01/male_06.mdl",
+        "models/player/group01/male_07.mdl",
+        "models/player/group01/male_08.mdl",
+        "models/player/group01/male_09.mdl",
+        "models/player/group02/male_02.mdl",
+        "models/player/group02/male_04.mdl",
+        "models/player/group02/male_06.mdl",
+        "models/player/group02/male_08.mdl",
+        "models/player/group03/female_01.mdl",
+        "models/player/group03/female_02.mdl",
+        "models/player/group03/female_03.mdl",
+        "models/player/group03/female_04.mdl",
+        "models/player/group03/female_05.mdl",
+        "models/player/group03/female_06.mdl",
+        "models/player/group03/male_01.mdl",
+        "models/player/group03/male_02.mdl",
+        "models/player/group03/male_03.mdl",
+        "models/player/group03/male_04.mdl",
+        "models/player/group03/male_05.mdl",
+        "models/player/group03/male_06.mdl",
+        "models/player/group03/male_07.mdl",
+        "models/player/group03/male_08.mdl",
+        "models/player/group03/male_09.mdl",
+        "models/player/group03m/female_01.mdl",
+        "models/player/group03m/female_02.mdl",
+        "models/player/group03m/female_03.mdl",
+        "models/player/group03m/female_04.mdl",
+        "models/player/group03m/female_05.mdl",
+        "models/player/group03m/female_06.mdl",
+        "models/player/group03m/male_01.mdl",
+        "models/player/group03m/male_02.mdl",
+        "models/player/group03m/male_03.mdl",
+        "models/player/group03m/male_04.mdl",
+        "models/player/group03m/male_05.mdl",
+        "models/player/group03m/male_06.mdl",
+        "models/player/group03m/male_07.mdl",
+        "models/player/group03m/male_08.mdl",
+        "models/player/group03m/male_09.mdl"
+    }
+    local playerModelCount = #playerModels
+
+    local propModels = {
+        "models/props_c17/FurnitureDresser001a.mdl",
+        "models/props_junk/wood_crate001a.mdl",
+        "models/props_combine/breendesk.mdl",
+        "models/props_lab/filecabinet02.mdl",
+        "models/props_junk/watermelon01.mdl",
+        "models/props_interiors/VendingMachineSoda01a.mdl",
+        "models/props_c17/oildrum001_explosive.mdl",
+        "models/props_junk/wood_crate002a.mdl",
+        "models/props_c17/furnitureStove001a.mdl",
+        "models/props_lab/kennel_physics.mdl",
+        "models/props_junk/TrashBin01a.mdl",
+        "models/noesis/donut.mdl",
+        "models/props_phx/construct/concrete_pipe01.mdl",
+        "models/maxofs2d/companion_doll.mdl",
+        "models/props_c17/FurnitureBathtub001a.mdl",
+        "models/props_lab/blastdoor001c.mdl",
+        "models/props_c17/FurnitureWashingmachine001a.mdl",
+        "models/props_lab/blastdoor001b.mdl",
+        "models/props_lab/blastdoor001a.mdl",
+        "models/props_wasteland/controlroom_filecabinet002a.mdl",
+        "models/props_wasteland/controlroom_storagecloset001a.mdl",
+        "models/props_wasteland/controlroom_storagecloset001b.mdl",
+        "models/props_wasteland/laundry_cart002.mdl",
+        "models/props_wasteland/laundry_dryer001.mdl",
+        "models/props_wasteland/laundry_dryer002.mdl",
+        "models/props_wasteland/laundry_washer001a.mdl",
+        "models/props_c17/Lockers001a.mdl",
+        "models/props_wasteland/laundry_washer003.mdl",
+        "models/props_wasteland/kitchen_stove002a.mdl",
+        "models/props_junk/TrashDumpster02.mdl",
+        "models/props_wasteland/kitchen_stove001a.mdl",
+        "models/props_junk/gascan001a.mdl",
+        "models/props_interiors/Furniture_Couch02a.mdl",
+        "models/props_interiors/Furniture_Couch01a.mdl",
+        "models/props_trainstation/trainstation_ornament001.mdl",
+        "models/props_wasteland/kitchen_fridge001a.mdl",
+        "models/props_docks/channelmarker_gib02.mdl",
+        "models/props_wasteland/medbridge_post01.mdl",
+        "models/props_wasteland/prison_celldoor001b.mdl",
+        "models/props_wasteland/prison_bedframe001b.mdl",
+        "models/props_wasteland/prison_shelf002a.mdl",
+        "models/props_wasteland/wheel01a.mdl",
+        "models/props_junk/Shoe001a.mdl",
+        "models/props_lab/monitor02.mdl",
+        "models/props_lab/servers.mdl",
+        "models/props_lab/workspace001.mdl",
+        "models/props_lab/workspace002.mdl",
+        "models/props_lab/workspace003.mdl",
+        "models/props_lab/workspace004.mdl",
+        "models/props_trainstation/bench_indoor001a.mdl",
+        "models/props_trainstation/payphone001a.mdl",
+        "models/props_trainstation/traincar_seats001.mdl",
+        "models/props_trainstation/trainstation_clock001.mdl",
+        "models/props_phx/facepunch_logo.mdl", 
+        "models/xqm/jetbody3.mdl", 
+        "models/XQM/Rails/gumball_1.mdl", 
+        "models/props_phx/construct/metal_plate_curve360x2.mdl", 
+        "models/maxofs2d/companion_doll.mdl", 
+        "models/maxofs2d/logo_gmod_b.mdl" , 
+        "models/props_phx/misc/bunker01.mdl" , 
+        "models/props_phx/cannon.mdl",
+        "models/nova/chair_wood01.mdl",
+        "models/props_phx/games/chess/board.mdl",
+        "models/mechanics/wheels/wheel_smooth_72w.mdl",
+        "models/props_phx/mk-82.mdl",
+        "models/props_phx/construct/windows/window_curve360x2.mdl",
+        "models/props_canal/boat002b.mdl",
+        "models/props_vehicles/car002a_physics.mdl" ,
+        "models/Items/car_battery01.mdl",
+        "models/props_junk/Wheebarrow01a.mdl",
+        "models/props_wasteland/cargo_container01.mdl",
+        "models/props_wasteland/cargo_container01b.mdl",
+        "models/props_wasteland/cargo_container01c.mdl",
+        "models/props_borealis/bluebarrel001.mdl"
+    }
+    local propModelCount = #propModels
+
+    local weaponHoldtypes = {
+        none = { idleActID = 1777, runActID = 1779 },
+        physgun = { idleActID = 1857, runActID = 1859 },
+        crowbar = { idleActID = 1847, runActID = 1849 },
+        pistol = { idleActID = 1787, runActID = 1789 },
+        revolver = { idleActID = 1663, runActID = 1665 },
+        toolgun = { idleActID = 1663, runActID = 1665 },
+        shotgun = { idleActID = 1817, runActID = 1819 },
+        smg = { idleActID = 1797, runActID = 1799 }
+    }
+    local weaponList = table.getKeys( weaponHoldtypes )
+    local weaponCount = #weaponList
+
+    local function perf( fraction )
+        return quotaTotalAverage() < quotaMax() * fraction
+    end
+
+    local function getRandomPlayerModel()
+        return playerModels[math.random( 1, playerModelCount )]
+    end
+
+    local function getRandomWeapon()
+        --return weaponHoldtypes[math.random( 1, #weaponHoldtypes )]
+        local weaponName = weaponList[math.random( 1, weaponCount )]
+        local weaponData = weaponHoldtypes[weaponName]
+
+        return weaponName, weaponData
+    end
+
+    if solidProps then -- Confusing?
+        solidProps = false
+    else
+        solidProps = true
+    end
+
+    for i = 1, MAX_BOTS do
+        local currentBot = bots[i] -- holo is the bot's entity
+        currentBot.weaponHolo = holograms.create( Vector( 0, 0, 50 ), Angle( 0 ), "models/weapons/w_physics.mdl", Vector( 0 ) )
+        currentBot.time = 0
+        currentBot.propTime = 0
+    end
+
+    --local targetLook = 1 -- ??
+    --local target = 1
+
+    local fill = 0
+    timer.create( "The Timer", 0.5, 0, function()
+        --print( firstFill )
+        fill = fill + 1
+        
+        --[[ -- May not work with new setup
+        if fill < MAX_BOTS + 1 then
+            bots[fill]:remove()
+        end
+
+        fill = MAX_BOTS + 1
+        ]]
+        
+        for i = 1, MAX_BOTS do -- Makes sense to use the constant here I think
+            if not perf( QUOTA_MULTI ) then return end -- Returns early if the quota is not adequate
+
+            spawnTimeLimit = spawnTimeLimit - 1 -- delay?
+
+            local currentBot = bots[i]
+
+            if not isValid( currentBot.weaponHolo ) then
+                currentBot.weaponHolo = holograms.create( chip():getPos() + Vector( 0, 0, 50 ), Angle( 0 ), "models/weapons/w_physics.mdl", Vector( 0 ) )
+            end
+
+            local currentWeaponHolo = currentBot.weaponHolo
+                
+            spawnTimeLimit = 5
+
+            --local randomPlayerModel = getRandomPlayerModel()
+            --if not randomPlayerModel then getRandomPlayerModel() -- Redundant?
+            currentBot.nextbot = nextbot.create( chip():getPos(), getRandomPlayerModel() )
+            local currentNextbot = currentBot.nextbot
+
+            if isValid( currentNextbot ) then
+                if currentWeaponHolo:getAttachment( 5 ) then
+                    currentWeaponHolo:getParent( currentWeaponHolo, 5 ) end
+                end
+
+                currentWeaponHolo:setSkin( 1 )
+                currentWeaponHolo:addEffects( EF.BONEMERGE )
+
+                local spawnPos = ( chip():getPos() + Vector( math.random( -40, 40 ) * 20, math.random( -40, 40 ) * 20, 70 ) )
+                currentNextbot:setPos( spawnPos )
+                currentNextbot:setHealth( 75 )
+
+                -- TODO: Config?
+                currentNextbot:setJumpGapsAllowed( true )
+                currentNextbot:setClimbAllowed( true )
+                currentNextbot:setStepHeight( 30 )
+                currentNextbot:ragdollOnDeath( true )
+                currentNextbot:setAvoidAllowed( true )
+
+                currentBot.time = 0
+                local currentBotTime = currentBot.time
+
+                local currentHoldtypeName, currentHoldtype = getRandomHoldtype()
+
+                currentNextbot:setIdleAct( currentHoldtype.idleActID )
+                currentNextbot:setRunAct( currentHoldtype.runActID )
+
+                currentNextbot:addDeathCallback( "deaf", function( nextbot, damage, attacker, inflictor, damagePos, damageForce, damageType )
+                    currentWeaponHolo:removeEffects( EF.BONEMERGE )
+                end )
+
+                currentBot:setGotoPos( currentBot:getPos() + Vector( math.random( -100, 100 ), math.random( -100, 100 ), 0 ) )
+
+                if not perf( QUOTA_MULTI ) then return end
+
+                net.start( "BotUpdate" )
+                net.writeUInt( i, 5 )
+                net.writeEntity( currentBot )
+                net.send()
+            end
+
+            if isValid( currentBot ) and currentNextbot:getClass() == "starfall_cnextbot" and perf( QUOTA_MULTI ) then --???            
+                local randRun = math.random( 0, 151 )
+                local randCrouch = math.random( 0, 151 )
+
+                local running
+                local crouching
+
+                if randRun < 112.5 then
+                    running = true
+                    crouching = false
+                else
+                    run = false
+                end
+
+                if randCrouch < 5 then
+                    crouching = true
+                    running = false
+                else
+                    crouching = false
+                end
+
+                if running then
+                    currentNextbot:setMoveSpeed( 400 )
+                end
+
+                if crouching then
+                    currentNextbot:setMoveSpeed( 60 )
+                    currentBot.actInc = 2
+                else
+                    currentBot.actInc = 0
+                end
+
+                if not running and not crouching then
+                    currentNextbot:setMoveSpeed( 200 )
+                end
+
+                local currentActInc = currentBot.actInc
+
+                currentNextbot:setIdleAct( currentHoldtype.idleActID + currentActInc * 1.5 )
+                currentNextbot:setRunAct( currentHoldtype.runActID + currentActInc )
+
+                local currentIdleActID = currentNextbot:getIdleAct()
+                local currentRunActID = currentNextbot:getRunAct()
+                
+                -- TODO: No switches!!
+                if currentRunActID == 1879 + currentActInc or currentIdleActID == 1877 + currentActInc * 1.5 then
+                    currentBot.weaponHolo:setModel( "models/weapons/w_crowbar.mdl" )
+                end
+
+                if currentRunActID == 1779 + currentActInc or currentIdleActID == 1877 + currentActInc * 1.5 then
+                    currentBot.weaponHolo:setNoDraw( true )
+                else
+                    currentBot.weaponHolo:setNoDraw( false )
+                end
+
+                if currentRunActID == 1859 + currentActInc or currentIdleActID == 1857 + currentActInc * 1.5 then
+                    currentBot.weaponHolo:setModel( "models/weapons/w_physics.mdl" )
+                end
+
+                if currentRunActID == 1789 + currentActInc or currentIdleActID == 1787 + currentActInc * 1.5 then
+                    currentBot.weaponHolo:setModel( "models/weapons/w_pistol.mdl" )
+                end
+
+                if currentHoldtypeName == "toolgun" then
+                    currentBot.weaponHolo:setModel( "models/weapons/w_toolgun.mdl" )
+                end
+
+                if currentHoldtypeName == "revolver" then
+                    currentBot.weaponHolo:setModel( "models/weapons/w_357.mdl" )
+                end
+
+                if currentRunActID == 1819 + currentActInc or currentIdleActID == 1817 + currentActInc * 1.5 then
+                    currentBot.weaponHolo:setModel( "models/weapons/w_shotgun.mdl" )
+                end
+
+                if currentRunActID == 1799 + currentActInc or currentIdleActID == 1797 + currentActInc * 1.5 then
+                    currentBot.weaponHolo:setModel( "models/weapons/w_smg1.mdl" )
+                end
+
+                currentWeaponHolo = currentBot.weaponHolo
+
+                local pos, ang = currentWeaponHolo:getAttachment( 1 )
+                local pos2, and2 = currentBot:getAttachment( 12 )
+
+                --currentBot:setPose( "aim_yaw", -1 )
+                --print( currentBot:getPose( "aim_yaw" ) )
+
+                if math.random( 1, 6 ) == 5 then
+                    local rand = math.random( 1, 50 )
+
+                    if rand == 2 then -- NO SWITCHES!!
+                        currentBot.holdtype = weaponHoldtypes.crowbar
+                    elseif rand == 20 then
+                        currentBot.holdtype = weaponHoldtypes.hands
+                    elseif rand == 18 then
+                        currentBot.holdtype = weaponHoldtypes.physgun
+                    elseif rand == 48 then
+                        currentBot.holdtype = weaponHoldtypes.pistol
+                    elseif rand == 26 then
+                        currentBot.holdtype = weaponHoldtypes.revolver
+                    elseif rand == 38 then
+                        currentBot.holdtype = weaponHoldtypes.toolgun
+                    elseif rand == 29 then
+                        currentBot.holdtype = weaponHoldtypes.shotgun
+                    elseif rand == 42 then
+                        currentBot.holdtype = weaponHoldtypes.smg
+                    end
+                end
+
+                if currentNextbot:getGotoPos() and ( currentNextbot:getGotoPos() - currentNextbot:getPos() ):getLength() < 80 then
+                    currentNextbot:removeGotoPos()
+                    currentNextbot:setMoveSpeed( 200 )
+                end
+
+                if currentBotTime > 500 then
+                    currentNextbot:removeGotoPos()
+                    currentNextbot:setMoveSpeed( 200 )
+                end
+
+                if currentBotTime > 15 + math.random( -10, 10 ) and perf( QUOTA_MULTI ) then
+                    local tempGotoPos = currentNextbot:getGotoPos()
+                    
+                    if not tempGotoPos then
+                        tempGotoPos = currentNextbot:getPos()
+                    end
+
+                    if ( tempGotoPos - currentNextbot:getPos() ):getLength() < 80 or not tempGotoPos then
+                        currentNextbot:setGotoPos( currentNextbot:getPos() + Vector( math.random( -1000, 1000 ), math.random( -1000, 1000 ), 10 ) ) -- What about this bit?
+                        currentBotTime = 0
+                    end
+                end
+
+                currentBot.time = currentBot.time + 1
+            end
+        end)
+    //end )
+
+    local pointAng
+
+    timer.create( "playerupdate", 30, 0, function()
+        allPlayers = find.allPlayers
+    end )
+
+    --local randChoice = 150 -- Why?
+    local propCount = 0
+
+    timer.create( "test", 0.1, 0, function()
+        for i = 1, MAX_BOTS do
+            local currentBot = bots[i]
+
+            randChoice = math.random( 0, 15000 * 4 ) -- Why.
+
+            local currentBotClass = currentNextbot:getClass() -- ??
+
+            if isValid( currentBot.weaponHolo ) and currentBotClass ~= "starfall_hologram" then  -- What? Why?
+                if not currentNextbot:getGotoPos() then
+                    currentNextbot:setPose( "aim_yaw", 0 )
+                    currentNextbot:setPose( "aim_pitch", 0 )
+                end
+            end
+
+            if randChoice < 5025 and randCHoice > 5000 and propCount < 2 and perf( QUOTA_MULTI ) then
+                currentBot.propTime = 12
+                local currentPropTime = currentBot.propTime
+
+                if isValid( currentBot ) and currentBotClass ~= "starfall_hologram" then
+                    local aimRandYaw
+                end
+
+                aimRandYaw = math.random( -90, 90 )
+                aimRandPitch = math.random( 35, -10 )
+
+                currentNextbot:removeGotoPos()
+
+                local propTrace = trace.trace( currentNextbot:getEyePos(), ( ( currentNextbot:getEyeAngles() + Angle( aimRandPitch / 1.5, aimRandYaw, 0 ) ):getForward() * 10000 ) + currentNextbot:getPos(), { currentNextbot, currentBot.weaponHolo } )
+
+                -- tostring( propModels[math.random(1, 30)] ) -- No.
+                if propTrace.Hit and propTrace.Entity:getClass() ~= "starfall_cnextbot" then
+                    currentBot.zetaProp = prop.create( propTrace.HitPos, Angle( 0 ), tostring( propModels[math.random( 1, propModelCount )] ), true )
+                    currentZetaProp = currentBot.zetaProp
+
+                    propCount = propCount + 1
+
+                    currentZetaProp:setNoCollideAll( solidProps )
+
+                    if isValid( currentZetaProp ) then
+                        currentZetaProp:setPos( Vector( 0, 0, ( currentZetaProp:obbSize().z / 2 ) ) + propTrace.HitPos - currentZetaProp:getMassCenter() )
+                        currentZetaProp:setAngles( Angle( 0, ( Vector( 0, 0, currentZetaProp:obbSize().z / 2 ) + propTrace.HitPos - currentNextbot:getPos() ):getAngle().yaw, 0 ) )
+                    end
+                end
+
+                if not currentNextbot:getGotoPos() then
+                    currentNextbot:setPose( "aim_yaw", aimRandYaw )
+                    currentNextbot:setPose( "aim_pitch", aimRandPitch )
+                    currentNextbot:setPose( "head_yaw", aimRandYaw ) -- Typo? yes
+                    currentNextbot:setPose( "head_pitch", aimRandPitch )
+                elseif currentBot:getGotoPos() then
+                    currentNextbot:setPose( "aim_yaw", 0 )
+                    currentNextbot:setPose( "aim_pitch", 0 )
+                    currentNextbot:setPose( "head_yaw", aimRandYaw )
+                    currentNextbot:setPose( "head_pitch", aimRandPitch )
+                end
+            end
+
+            local randPlayer = allPlayers[math.random( 1, #allPlayers )]
+
+            if randChoice > 5025 or randChoice < 5000 and currentPropTime <= 0 and perf( QUOTA_MULTI ) then
+                if isValid( currentNextbot ) and isValid( allPlayers[randPlayer] ) and currentBot:getClass() ~= "starfall_hologram" then -- why?
+                    local pointAng
+
+                    if ( randPlayer:getPos() - currentNextbot:getPos() ):getLength() < 200 then
+                        pointAng = currentNextbot:localToWorldAngles( ( ( currentNextbot:getPos() - randPlayer:getPos() ):getAngle() ) - Angle( 0, 180, 0 ) )
+
+                        if not currentNextbot:getGotoPos() then
+                            currentNextbot:setPose( "aim_yaw", pointAng.yaw )
+                            currentNextbot:setPose( "aim_pitch", -pointAng.pitch )
+                            currentNextbot:setPose( "head_yaw", pointAng.yaw )
+                            currentNextbot:setPose( "head_pitch", -pointAng.pitch )
+                        elseif currentBot:getGotoPos() then
+                            currentNextbot:setPose( "aim_yaw", 0 )
+                            currentNextbot:setPose( "aim_pitch", 0 )
+                            currentNextbot:setPose( "head_yaw", pointAng.yaw )
+                            currentNextbot:setPose( "head_pitch", -pointAng.pitch )
+                        end
+                    end
+                end
+            end
+
+            currentBot.propTime = currentBot.propTime - 0.1
+            currentPropTime = currentBot.propTime
+
+            if currentPropTime < 0 then
+                currentBot.propTime = 0
+            end
+        end
+
+        propCount = 0
+    end )
+end
+
+-- DISCLAIMER: I have not refactored beyond this point. As a result, this may not make much sense.
+if CLIENT then
+    local bot = {}
+    local botRef = {}
+
+
+
+
+
+
+
+    local SpeakerHolo = {}
+
+    SpeakerIcon = render.createMaterial(
+        "voice/icntlk_pl",
+        function(_,_,_,_,size)
+        size(0,0,1024,1024)
+        end
+    )
+    
+    SpeakerIcon:setInt("$flags", 2097152)
+    local SpeakerTime = {}  
+    
+    
+    for i = 1, MaxBots do
+            SpeakerHolo[i] = holograms.create(chip():getPos() + Vector(0,0,52), Angle(90,0,0), "models/hunter/plates/plate1x1.mdl", Vector(0.35,0.35,0))
+            SpeakerHolo[i]:setMaterial("!"..SpeakerIcon:getName())
+            SpeakerHolo[i]:setScale(Vector(0,0,0))
+    end
+
+    
+
+    
+
+        
+    
+    
+    local Bot = class("Bot")
+local BotIdleSound = class("BotIdleSound")
+
+do -- Bot functions
+    function Bot:initialize(ent)
+        self.ent = ent
+        self.index = index
+        self.idleSound = BotIdleSound:new(ent)
+        
+    end
+    function Bot:think(t)
+        self.idleSound:think(t)
+        self.index = index
+        //if self.sound and not self.sound:isValid() then self.sound:stop() self.sound = nil end
+        //print(self.idleSound.sound)
+    end
+end
+
+
+
+
+
+
+
+
+
+do -- BotIdleSound functions
+    function BotIdleSound:initialize(ent)
+        self.ent = ent
+        self.loading = false
+        self.idleDelayTime = 0
+        self.index = index
+    end
+    function BotIdleSound:think(t)
+        
+        
+       if quotaTotalAverage() < quotaMax()*0.8 then 
+            
+            if isValid(self.sound) then
+                if isValid(self.ent) then
+                    self.sound:setPos(self.ent:getPos() + Vector(0,0,50))
+                end
+            elseif bass.soundsLeft() > 0 and not self.loading then
+                self:createSound()
+            end
+            
+        
+        
+        for i = 1, MaxBots do
+                    if isValid(SpeakerHolo[i]) then
+                    if isValid(self.sound) and self.index == i then 
+                        
+                        SpeakerHolo[i]:setScale(Vector(0.35,0.35,0))
+                        
+                    else
+                    
+                        if isValid(self.sound) == false and self.index == i then 
+                        
+                            
+                        //print(self.idleSound.sound)
+                            SpeakerHolo[i]:setScale(Vector(0,0,0))
+                        
+                        end
+                    end
+                    
+                    if isValid(botRef[i]) and SpeakerHolo[i]:getParent() == nil or isValid(botRef[i]) and isValid(SpeakerHolo[i]:getParent()) == false then
+                        SpeakerHolo[i]:setPos(botRef[i]:getPos() + Vector(0,0,80))
+                        SpeakerHolo[i]:setParent(botRef[i])
+                    end
+                    
+                    if isValid(botRef[i]) then
+                        SpeakerHolo[i]:setAngles((player():getPos() - botRef[i]:getPos()):getAngle() + Angle(90,0,0)) 
+                    end
+                    
+                    end
+                end
+    end
+    end
+    function BotIdleSound:createSound()
+        
+        
+
+        
+        
+        if math.random(0,250) == 50 then
+        
+        
+        self.loading = true
+        local url = "https://raw.githubusercontent.com/ReasonableScripts/StarZetaSounds/master/idle"..math.random(648)..".wav"
+        bass.loadURL(url, "3d noblock", function(snd)    
+            self.loading = false
+            if isValid(snd) then snd:setVolume(1) snd:setFade(500, 500) end
+            if isValid(snd) then
+                self.sound = snd        
+                local len = self.sound:getLength()
+                
+                
+                
+                timer.simple(len + self.idleDelayTime, function()
+                    snd:stop()
+                    self.sound = nil
+                    
+                    
+                    
+                end)
+                
+                
+                
+            end
+            
+            
+            
+        end)
+        
+    end
+    end
+end
+
+
+
+net.receive("BotUpdate", function()
+    index = net.readUInt( 5 )
+    
+    net.readEntity(function(ent)
+        if isValid(ent) then
+        botRef[index] = ent
+        bot[index] = Bot:new(ent, index)
+        end
+    end)
+end)
+
+    
+
+
+
+hook.add("think","",function()
+    
+
+    
+
+    local t = timer.curtime()
+    for _, bot in ipairs(bot) do
+        bot:think(t)
+        
+        
+        
+    end
+end)
+
+
+    
+end
