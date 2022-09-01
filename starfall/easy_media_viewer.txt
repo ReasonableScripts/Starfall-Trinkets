@@ -3,7 +3,7 @@
 --@server
 
 local appearToggle = 0
-
+print("Place screen AFTER placing chip")
 print("Whichever key is bound to walk will toggle screen visibility (Left ALT by default)")
 print("If toggled ON, screen will only appear if you look down")
 print("If toggled OFF, screen will not appear")
